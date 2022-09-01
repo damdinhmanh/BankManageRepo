@@ -1,10 +1,11 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer {
+public class Customer extends AccountDetail {
     private int balance;
     private String name;
     private LocalDate birthday;
@@ -13,23 +14,32 @@ public class Customer {
     private String nationalId;
     private String address;
     private String gender;
-    private String trustLevel;
+    private int trustLevel;
     private boolean isAccountEnabled;
     private int depositTotalAmount;
     private List<DepositDetail> depositList = new ArrayList<DepositDetail>();
     private List<TransactionHistory> transactionList = new ArrayList<TransactionHistory>();
-
-    public Customer(int balance, String name, LocalDate birthday, String phoneNum, String email, String nationalId,
-            String address, String gender, boolean isAccountEnabled) {
+    
+    public Customer(String accountId, String password, String role, int balance, String name, String birthday,
+            String phoneNum, String email, String nationalId, String address, String gender, int i,
+            boolean isAccountEnabled, int depositTotalAmount, List<DepositDetail> depositList,
+            List<TransactionHistory> transactionList) {
+        super(accountId, password, role);
         this.balance = balance;
         this.name = name;
-        this.birthday = birthday;
         this.phoneNum = phoneNum;
         this.email = email;
         this.nationalId = nationalId;
         this.address = address;
         this.gender = gender;
+        this.trustLevel = i;
         this.isAccountEnabled = isAccountEnabled;
+        this.depositTotalAmount = depositTotalAmount;
+        this.depositList = depositList;
+        this.transactionList = transactionList;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate birth = LocalDate.parse(birthday, formatter);
+        this.birthday = birth;
     }
 
     /**
@@ -147,14 +157,14 @@ public class Customer {
     /**
      * @return String return the trustLevel
      */
-    public String getTrustLevel() {
+    public int getTrustLevel() {
         return trustLevel;
     }
 
     /**
      * @param trustLevel the trustLevel to set
      */
-    public void setTrustLevel(String trustLevel) {
+    public void setTrustLevel(int trustLevel) {
         this.trustLevel = trustLevel;
     }
 

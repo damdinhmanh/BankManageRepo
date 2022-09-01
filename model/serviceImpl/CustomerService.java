@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import model.Account;
+import model.AccountDetail;
 import model.DepositDetail;
 import model.TransactionHistory;
 import model.service.ICustomerService;
+import utils.Gender;
 
 public class CustomerService implements ICustomerService {
 
@@ -47,43 +49,50 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public boolean updateAccAddress(String accountID, String newAddress) {
+    public boolean regAccountId(String name, LocalDate birthday, String phoneNum, String email, String nationalID,
+            String address, Gender gender) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean updateAccBirthday(String accountID, LocalDate newBirthDay) {
+    public boolean updateAccAddress(String accountID, String newAddress, List<AccountDetail> accountDetails) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean updateAccEmail(String accountID, String newEmail) {
+    public boolean updateAccBirthday(String accountID, LocalDate newBirthDay, List<AccountDetail> accountDetails) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean updateAccGender(String accountID, String newGender) {
+    public boolean updateAccEmail(String accountID, String newEmail, List<AccountDetail> accountDetails) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean updateAccName(String accountID, String newName) {
+    public boolean updateAccGender(String accountID, String newGender, List<AccountDetail> accountDetails) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean updateAccPassword(String accountID, String newPassword) {
+    public boolean updateAccName(String accountID, String newName, List<AccountDetail> accountDetails) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean updateAccPhoneNum(String accountID, String newPhone) {
+    public boolean updateAccPassword(String accountID, String newPassword, List<AccountDetail> accountDetails) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean updateAccPhoneNum(String accountID, String newPhone, List<AccountDetail> accountDetails) {
         // TODO Auto-generated method stub
         return false;
     }
@@ -93,5 +102,6 @@ public class CustomerService implements ICustomerService {
         // TODO Auto-generated method stub
         return 0;
     }
-    
+
+ 
 }

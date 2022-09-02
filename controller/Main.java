@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.lang.model.element.Element;
@@ -48,6 +49,7 @@ public class Main{
     public static boolean truePass(String password) {
         return Pattern.matches(PASSWORD_PATTERN, password);
     }
+
  
     public static boolean trueEmail(String email) {
          return Pattern.matches(EMAIL_PATTERN, email);
@@ -69,18 +71,18 @@ public class Main{
         }
         return isHas;
     }
-    public static boolean hasNationalID(String nationalID, List<AccountDetail> accountDetails) {
-        boolean isHas = false;
+    public static Customer hasNationalID(String nationalID, List<AccountDetail> accountDetails) {
+        Customer cusReturn = null;
         for (AccountDetail acc : accountDetails) {
             if (acc instanceof Customer) {
                 Customer cus = (Customer) acc;
                 if (cus.getNationalId().equals(nationalID)) {
-                    isHas = true;
+                    cusReturn = cus;
                     break;
                 }
             }
         }
-        return isHas;
+        return cusReturn;
     }
 
 
@@ -117,47 +119,73 @@ public class Main{
          String address = scanner.nextLine();
          System.out.print("Enter gender:  ");
          String gender = scanner.nextLine();
+
          System.out.print("Enter national ID:  ");
          String nationalId = scanner.nextLine();
-         String info = "Name: " +name +"\nBirthday: " +birthday +"\nPhone: " +phoneNum +"\nEmail: " +email +"\nAddress: " +address 
-                        +"\nGender: " +gender +"\nNationalID: " +nationalId;
-         System.out.println("\nYour information: \n\n" +info);
-         boolean isQuit = true;
-         while (isQuit) {
-            System.out.println("\n1.Keep on \n2.Exit");
-            String option1 = scanner.nextLine();
-            switch (option1) {
-                case "1" : {
-                    while (true) {
-                        System.out.println("Enter password: ");
-                        String password = scanner.nextLine();
-                        if (truePass(password)) {
-                            int newid = getRandomNumberUsingInts(100000, 999999);
-                            String accountId = Integer.toString(newid);
-                            AccountDetail customerAcc = new Customer(accountId, password, "Customer", 2000000, name, birthday, 
-                                                       phoneNum, email, nationalId, address, gender,
-                                                       50, false, 0, depositList, transactionList);
-                            accountDetails.add(customerAcc);
-                            System.out.println("\nWelcome to you have successfully registered!\n");
-                            System.out.println("Your login information: \n");
-                            System.out.println("AccountId: " +accountId +"\nPassword: "+password);
-                            isQuit = false;
-                            break;
-                        } else {
-                            System.out.println("Password must be between 8 and 15 characters and must contain uppercase, lowercase letters and numbers");
-                        }
-                    }
+         Customer regCus = hasNationalID(nationalId, accountDetails);
+
+         if (regCus != null) {
+            if (regCus.getEnabled() == true) {
+                System.out.println("This nationalId is already used, can not register account with this nationalId");
+            } else {
+                while (true) {
+                    System.out.println("Enter password: ");
+                    String password = scanner.nextLine();
+                    if (truePass(password)) {
+                        int newid = getRandomNumberUsingInts(100000, 999999);
+                        String accountId = Integer.toString(newid);
     
+                        regCus.setName(name);;
+                        regCus.setBirthday(birthday);
+                        regCus.setEmail(email);
+                        regCus.setPhoneNum(phoneNum);
+                        regCus.setAddress(address);
+                        regCus.setGender(gender);
+                        regCus.setAccountId(accountId);
+                        regCus.setPassword(password);
+                        regCus.setRole("customer");
+                        regCus.setIsAccountEnabled(true);
+    
+                        System.out.println("\nWelcome to you have successfully registered!\n");
+    
+                        System.out.println(regCus.toString());
+    
+    
+                        break;                   
+                    } else {
+                        System.out.println("Password must be between 8 and 15 characters and must contain uppercase, lowercase letters and numbers");
+                    }
                 }
-                case "2" : {
-                    isQuit = false;
-                    break;
+
+            }
+           
+         } else {
+            while (true) {
+                
+                System.out.println("Enter password: ");
+                String password = scanner.nextLine();
+                if (truePass(password)) {
+                    int newid = getRandomNumberUsingInts(100000, 999999);
+                    String accountId = Integer.toString(newid);
+                    AccountDetail customerAcc = new Customer(accountId, password, "customer", 2000000, name, birthday, 
+                                               phoneNum, email, nationalId, address, gender,
+                                               50, true, 0, depositList, transactionList);
+
+                    accountDetails.add(customerAcc);
+                    System.out.println(customerAcc.toString());
+                    System.out.println("\nWelcome to you have successfully registered!\n");
+                    break;                   
+                } else {
+                    System.out.println("Password must be between 8 and 15 characters and must contain uppercase, lowercase letters and numbers");
                 }
-                default : break;
-             }
-             System.out.println(accountDetails.toString());
+            }
+           
+        
+    
 
          }
+         
+               
     }
 
 

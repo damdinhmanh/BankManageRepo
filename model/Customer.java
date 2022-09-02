@@ -80,8 +80,10 @@ public class Customer extends AccountDetail {
     /**
      * @param birthday the birthday to set
      */
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
+    public void setBirthday(String birthday) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate birth = LocalDate.parse(birthday, formatter);
+        this.birthday = birth;
     }
 
     /**
@@ -171,7 +173,7 @@ public class Customer extends AccountDetail {
     /**
      * @return boolean return the isAccountEnabled
      */
-    public boolean isIsAccountEnabled() {
+    public boolean getEnabled() {
         return isAccountEnabled;
     }
 
@@ -208,6 +210,10 @@ public class Customer extends AccountDetail {
      */
     public List<TransactionHistory> getTransactionList() {
         return transactionList;
+    }
+
+    public boolean isAccountEnabled() {
+        return isAccountEnabled;
     }
 
 }

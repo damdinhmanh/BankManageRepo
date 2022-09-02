@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer {
+public class Customer extends AccountDetail {
     private int balance;
     private String name;
     private LocalDate birthday;
@@ -19,8 +19,10 @@ public class Customer {
     private List<DepositDetail> depositList = new ArrayList<DepositDetail>();
     private List<TransactionHistory> transactionList = new ArrayList<TransactionHistory>();
 
-    public Customer(int balance, String name, LocalDate birthday, String phoneNum, String email, String nationalId,
-            String address, String gender, boolean isAccountEnabled) {
+    
+    public Customer(String accountId, String password, String role, int balance, String name, LocalDate birthday,
+            String phoneNum, String email, String nationalId, String address, String gender, boolean isAccountEnabled) {
+        super(accountId, password, role);
         this.balance = balance;
         this.name = name;
         this.birthday = birthday;
@@ -29,8 +31,13 @@ public class Customer {
         this.nationalId = nationalId;
         this.address = address;
         this.gender = gender;
+        this.trustLevel = trustLevel;
         this.isAccountEnabled = isAccountEnabled;
+        // this.depositTotalAmount = depositTotalAmount;
+        // this.depositList = depositList;
+        // this.transactionList = transactionList;
     }
+
 
     /**
      * @return int return the balance

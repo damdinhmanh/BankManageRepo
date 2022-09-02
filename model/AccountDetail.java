@@ -1,9 +1,15 @@
 package model;
-
 public class AccountDetail {
     private String accountId;
     private String password;
     private String role;
+
+
+    public AccountDetail(String accountId, String password, String role) {
+        this.accountId = accountId;
+        this.password = password;
+        this.role = role;
+    }
 
     /**
      * @return String return the accountId
@@ -51,4 +57,5 @@ public class AccountDetail {
     public String toString() {
         return "AccountDetail [accountId=" + accountId + ", password=" + password + ", role=" + role + "]";
     }
+
 }

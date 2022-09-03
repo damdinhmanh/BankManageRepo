@@ -11,13 +11,13 @@ import utils.Gender;
 
 public interface ICustomerService {
     //Cusomter can update
-    public boolean updateAccPassword(String accountID, String newPassword, List<AccountDetail> accountDetails);
-    public boolean updateAccName(String accountID, String newName, List<AccountDetail> accountDetails);
-    public boolean updateAccBirthday(String accountID, LocalDate newBirthDay, List<AccountDetail> accountDetails);
-    public boolean updateAccPhoneNum(String accountID, String newPhone, List<AccountDetail> accountDetails);
-    public boolean updateAccEmail(String accountID, String newEmail, List<AccountDetail> accountDetails);
-    public boolean updateAccAddress(String accountID, String newAddress, List<AccountDetail> accountDetails);
-    public boolean updateAccGender(String accountID, String newGender, List<AccountDetail> accountDetails);
+    public void updateAccPassword(String accountID, List<AccountDetail> accountDetails);
+    public void updateAccName(String accountID, List<AccountDetail> accountDetails);
+    public void updateAccBirthday(String accountID, List<AccountDetail> accountDetails);
+    public void updateAccPhoneNum(String accountID, List<AccountDetail> accountDetails);
+    public void updateAccEmail(String accountID, List<AccountDetail> accountDetails);
+    public void updateAccAddress(String accountID, List<AccountDetail> accountDetails);
+    public void updateAccGender(String accountID, List<AccountDetail> accountDetails);
 
     //get account infor
     public Account getCusAccountInfor(String accountID);

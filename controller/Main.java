@@ -6,23 +6,31 @@ import model.AccountDetail;
 import model.Admin;
 import model.Customer;
 import java.util.List;
+import java.util.Random;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import javax.management.relation.Role;
-
 public class Main{
     static Scanner scanner = new Scanner(System.in);
     static List<AccountDetail> accountDetails = new ArrayList<AccountDetail>();
+    static String ACCOUNTID_PATTERN =
+            "^([0-9]).{6}$";
 
     static String PASSWORD_PATTERN =
             "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()-_[{}]:;',?/*~$^+=<>]).{8,15}$";
-    // static String EMAIL_PATTERN =
-    //         "^[a-zA-Z][\\w-]+@([\\w]+\\.[\\w]+|[\\w]+\\.[\\w]{2,}\\.[\\w]{2,})$";
+
     public static void openScanner() {
         scanner  = new Scanner(System.in);
     }
+
+    static public int getRandomNumberUsingInts(int min, int max) {
+        Random random = new Random();
+        return random.ints(min, max)
+          .findFirst()
+          .getAsInt();
+    }
+
     public static void mainLoop() {
         int userOption = 0;
 
@@ -32,7 +40,7 @@ public class Main{
         while (true) {
             switch (userOption) {
                 case ConstantVars.OPTION_LOGIN_PAGE: {
-                    Login();
+                    loginBanking();
                     showMenu();
                     break;
                 }
@@ -47,9 +55,7 @@ public class Main{
     
 
     private static void showMenu() {
-    }
-    private static void showMenu(String role) {
-        System.out.println("Chuc nang cua " + role);
+        System.out.println("Chuc nang cua Admin ");
         System.out.println("[1] Them Account customer");
         System.out.println("[2] Sua Account customer");
         System.out.println("[3] Xoa Account customer");
@@ -88,7 +94,7 @@ public class Main{
             }
         } while (menu1 != 6);
         
-            System.out.println("Chuc nang cua " + role);
+            System.out.println("Chuc nang cua Customer");
             System.out.println("[1] Chuyen tien");
             System.out.println("[2] Gui tiet kiem");
             System.out.println("[3] Rut tiet kiem");
@@ -131,105 +137,73 @@ public class Main{
             } while (menu2 != 7);
     }
 
-    public static void Login() {
-        
+    public static void loginBanking() {
         System.out.println("----Login Page----");
-        System.out.println();
         scanner.nextLine();
-        System.out.print("Nhap accountId : ");
-        String accountId = scanner.nextLine();
-        System.out.println();
 
-        System.out.print("Nhap password : ");
-        String pass = scanner.nextLine();
-        System.out.println();
-
-        System.out.print("Nhap role : ");
-        String role = scanner.nextLine();
-        System.out.println();
-
-        // Tạo điều kiện kiểm tra AccountId để đăng nhập
-        boolean checkExistAccountId = false;
-        for (AccountDetail accountDetail : accountDetails) {
-            if (accountId.equals(accountDetail.getAccountId())) {
-                checkExistAccountId = true;
-                break;
-            }
-        }
-        if (!checkExistAccountId) {
-            System.out.println("Kiem tra lai AccountId"); //nếu accountid sai yêu cầu kiểm tra lại accountid!!!
-            Login();
-        }
-
-        // Dùng equals để so sánh vs AccountId and password ban đầu !!!
-        boolean checkExistAccountDetail = false;
-        for (AccountDetail accountDetail : accountDetails) {
-            if (accountId.equals(accountDetail.getAccountId()) && pass.equals(accountDetail.getPassword())) {
-                checkExistAccountDetail = true;
-                break;
-            }
-        }
-        // Kiểm tra role đề đăng nhập
-        boolean checkExistRole = false;
-        for (AccountDetail accountDetail : accountDetails) {
-            if (role.equals(accountDetail.getRole())) {
-                checkExistRole = true;
-                break;
-            }
-        }
-    
-        if (!checkExistAccountDetail) {
-            int choose;
-            System.out.println("1. Dang nhap lai");
-            System.out.println("2. Quen mat khau");
-            do {
-                choose = Integer.parseInt(scanner.nextLine());
-
-                switch (choose) {
-                    case 1:
-                        mainLoop();
-                        return;
-                    default:
-                        quenPass();
-                        return;
+        boolean kiemTraGiaTriAccountId = false;
+        String accountID;
+        do {
+            System.out.print("Nhap accountId: ");
+            accountID = scanner.nextLine();
+            if(checkAccountId(accountID) == false){
+                System.out.println("Ban nhap sai dinh dang!!! ");
+                kiemTraGiaTriAccountId = false;
+            }else{
+                for (AccountDetail accountDetail : accountDetails) {
+                    if (accountID.equals(accountDetail.getAccountId())) {
+                        kiemTraGiaTriAccountId = true;
+                    }else{
+                        kiemTraGiaTriAccountId = false;
+                        System.out.println("Kiem tra lai AccountId!!!");
+                    }  
                 }
-            } while (choose != 1);
-        }
-        showMenu(role);
-    }
-    static void quenPass() {
-        boolean checkExistAccountDetail = false;
-        System.out.print("Nhap Role : ");
-        String role = scanner.nextLine();
-        System.out.println();
+            }
 
-        for (AccountDetail accountDetail : accountDetails) {
-            if (role.equals(accountDetail.getRole())) {
-                checkExistAccountDetail = true;
-                thaoTacDoiPass();
-                showMenu(role);
+        } while(kiemTraGiaTriAccountId == false);
+
+        boolean kiemTraGiatriPassword = false;
+
+        do {
+            System.out.print("Nhap Password: ");
+            String password = scanner.nextLine();
+            if(checkPass(password) == false){
+                System.out.println("Ban nhap sai dinh dang!!! ");
+                scanner.nextLine();
+                kiemTraGiatriPassword = false;
+            }else{
+                for (AccountDetail accountDetail : accountDetails) {
+                    if (password.equals(accountDetail.getPassword()) && accountID.equals(accountDetail.getAccountId())) {
+                        kiemTraGiatriPassword = true;
+                    }else{
+                        kiemTraGiatriPassword = false;
+                        System.out.println("Kiem tra lai Password!!!");
+                        scanner.nextLine();
+                    }
+                }
+            }
+        } while(kiemTraGiatriPassword == false);
+        
+       
+
+
+        while(true){
+            int newCapcha = getRandomNumberUsingInts(10000, 99999);
+            System.out.println("Nhap ma bao ve sau: " + newCapcha);
+            System.out.print("Nhap ma bao ve: ");
+            int inputCapcha = scanner.nextInt();
+            
+            if(newCapcha == inputCapcha){
+                System.out.println("Nhap dung capcha");
                 break;
+            }else{
+                System.out.println("Ban da nhap sai ma bao ve , Yeu cau nhap lai!!!");
             }
         }
 
-        if (!checkExistAccountDetail) {
-            System.out.println("role khong ton tai");
-            Login();
-        }
-    }
-
-    static void thaoTacDoiPass() {
-        System.out.print("Nhap mat khau moi: ");
-        String pass = scanner.nextLine();
-        for(AccountDetail accountDetail : accountDetails){
-        if (!checkPass(pass)) {
-            System.out.println("Mat khau khong dung dinh dang");
-            thaoTacDoiPass();
-        }
-            accountDetail.setPassword(pass);
-        System.out.println("Doi mat khau thanh cong");
-            return;
-        }
+        System.out.println("Dang nhap thanh cong !!!");
+        scanner.nextLine();
+       
     }
 
     public static void closeScanner() {
@@ -238,28 +212,21 @@ public class Main{
 
 
     public static void main(String[] args) { 
-        accountDetails.add((AccountDetail) new Admin("123456", "Admin@123", "admin"));
-        accountDetails.add((AccountDetail) new Customer("000001", "Customer@1", "customer1", 100000000, "Hieu", LocalDate.of(1999, 07, 27), "0966759751", "hieu@gmail.com", "nationalId", "Ha Noi", "Nam", false));
-        accountDetails.add((AccountDetail) new Customer("000002", "Customer@2", "customer2", 100000000, "Hoang", LocalDate.of(1998, 04, 27), "0961256789", "hoang@gmail.com", "nationalId", "Ha Noi", "Nam", false));
-        
+        accountDetails.add((AccountDetail) new Admin("100001", "Admin@123", "admin"));
+        accountDetails.add((AccountDetail) new Customer("100002", "Customer@1", "customer1", 100000000, "Hieu", LocalDate.of(1999, 07, 27), "0966759751", "hieu@gmail.com", "nationalId", "Ha Noi", "Nam", false));
+        accountDetails.add((AccountDetail) new Customer("100003", "Customer@2", "customer2", 100000000, "Hoang", LocalDate.of(1998, 04, 27), "0961256789", "hoang@gmail.com", "nationalId", "Ha Noi", "Nam", false));
         openScanner();
         ViewOption.displayMainStartView();
         mainLoop();
 
         closeScanner();
     }
-    
-    // // static boolean checkEmail(String email) {
-    // //     boolean checkExistEmail = false;
-    // //     for (AccountDetail accountDetail : accountDetails) {
-    // //         if (email.equals(accountDetail.getEmail())) {
-    // //             checkExistEmail = true;
-    // //         }
-    // //     }
-    // //     return Pattern.matches(EMAIL_PATTERN, email) && !checkExistEmail;
-    // // }
 
     static boolean checkPass(String pass) {
         return Pattern.matches(PASSWORD_PATTERN, pass);
     }
+    static boolean checkAccountId(String accountID) {
+        return Pattern.matches(PASSWORD_PATTERN, accountID);
+    }
+
 }

@@ -21,7 +21,7 @@ public class Customer extends AccountDetail {
     private List<TransactionHistory> transactionList = new ArrayList<TransactionHistory>();
     
     public Customer(String accountId, String password, String role, int balance, String name, String birthday,
-            String phoneNum, String email, String nationalId, String address, String gender, int i,
+            String phoneNum, String email, String nationalId, String address, String gender, int trustlevel,
             boolean isAccountEnabled, int depositTotalAmount, List<DepositDetail> depositList,
             List<TransactionHistory> transactionList) {
         super(accountId, password, role);
@@ -32,7 +32,7 @@ public class Customer extends AccountDetail {
         this.nationalId = nationalId;
         this.address = address;
         this.gender = gender;
-        this.trustLevel = i;
+        this.trustLevel = trustlevel;
         this.isAccountEnabled = isAccountEnabled;
         this.depositTotalAmount = depositTotalAmount;
         this.depositList = depositList;

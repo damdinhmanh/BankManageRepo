@@ -1,5 +1,4 @@
 package model;
-
 public class AccountDetail {
     private String accountId;
     private String password;
@@ -58,4 +57,5 @@ public class AccountDetail {
     public String toString() {
         return "AccountDetail [accountId=" + accountId + ", password=" + password + ", role=" + role + "]";
     }
+
 }

@@ -2,7 +2,8 @@ package model.service;
 
 import java.time.LocalDate;
 
-import model.Account;
+import model.Account;  
+import model.Customer;
 
 public interface IAdminService {
     //Account manage

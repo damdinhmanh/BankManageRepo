@@ -1,8 +1,10 @@
 package model.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import model.Account;  
+import model.Account;
+import model.AccountDetail;
 import model.Customer;
 
 public interface IAdminService {
@@ -24,7 +26,8 @@ public interface IAdminService {
 
     //update interest rate 
     public void updateInterestRate(double newInterestRate);
+    public double getInterestRate();
 
     //update customer trust level
-    public void updateCustomerTrustLevel(int newLevel, String nationalID);
+    public void updateTrustLevelbyNationalID(List<AccountDetail> accountDetails, String nationalID, int newTrustLevel);
 }

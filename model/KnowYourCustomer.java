@@ -2,19 +2,23 @@ package model;
 
 import java.util.List;
 
+import utils.ConstantVars;
+
 public class KnowYourCustomer {
-    public static boolean verifyCustomer(String nationalID, List<AccountDetail> acccountList, Customer customer) {
+    public static boolean verifyCustomer(String nationalID, List<AccountDetail> acccountList, AccountDetail newAccAdded) {
         Customer custemp;
         for (AccountDetail accountDetail : acccountList) {
-            custemp = (Customer) accountDetail;
-            if (nationalID.equals(custemp.getNationalId())) {
-                // (custemp.getTrustLevel() >= 30) {
-                //    return true;
-                //}
+            if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                custemp = (Customer) accountDetail;
+                if (nationalID.equals(custemp.getNationalId())) {
+                    if (custemp.getTrustLevel() >= 30) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
             }
         }
-
-        //customer.setTrustLevel(50);//new customer have no Trust data -> set default = 50
 
         return true;
     }

@@ -2,6 +2,7 @@ package controller;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -15,7 +16,9 @@ import model.AccountDetail;
 import model.Admin;
 import model.Customer;
 import model.DepositDetail;
+import model.KnowYourCustomer;
 import model.TransactionHistory;
+import model.serviceImpl.AdminService;
 import view.*;
 import utils.*;
 
@@ -24,19 +27,22 @@ public class Main{
     static List<AccountDetail> accountDetails = new ArrayList<AccountDetail>();
     private static List<DepositDetail> depositList;
     private static List<TransactionHistory> transactionList;
-    static AccountDetail acc1 = new Customer("123456", "123", "customer", 15000000, "Hoang", "18/06/1998",
-                                            "021932184", "Hoang@gmail.com", "123456", "address", "MALE", 90,
-                                            true, 200000, depositList, transactionList);
+    private static AdminService adminSeviceManager;
+
     static String ACCOUNTID_PATTERN = "{10,15}$";
     static String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()-_[{}]:;',?/*~$^+=<>]).{8,15}$";
     static String EMAIL_PATTERN = "^[a-zA-Z][\\w-]+@([\\w]+\\.[\\w]+|[\\w]+\\.[\\w]{2,}\\.[\\w]{2,})$";
     public static Account listAcc;
 
-    public static void openScanner() {
+    public static void openSession() {
+        adminSeviceManager = new AdminService();
+        adminSeviceManager.initAdminService();
+
+
         scanner  = new Scanner(System.in);
     }
 
-    public static void closeScanner() {
+    public static void closeSession() {
         scanner.close();
     }
 
@@ -71,45 +77,258 @@ public class Main{
                     userOption = ConstantVars.OPTION_NONE_PAGE;
                     break;
                 }
+                case ConstantVars.OPTION_EXIT_PROGRAME: {
+                    System.exit(0);
+                    break;
+                }
             }
         } while (userOption != ConstantVars.OPTION_NONE_PAGE);
     }
-    
 
+    public static void adminSavingInterestPage() {
+        System.out.printf("\n\nQuan li lai suat tiet kiem Page\n");
+        System.out.println("[1] Update lai suat tiet kiem");
+        System.out.println("[2] Kiem tra lai suat tiet kiem hien tai");
+        System.out.println("[3] Quay lai-> Chuc nang cua Admin");
+
+        int menu1;
+        do {
+            System.out.printf("Nhap lua chon: ");
+            menu1 = Integer.parseInt(scanner.nextLine());
+
+            switch (menu1) {
+                case 1:{
+                    System.out.printf("Nhap lai suat: ");
+                    double newInterestRate = Double.parseDouble(scanner.nextLine());
+                    adminSeviceManager.updateInterestRate(newInterestRate);
+                    System.out.println("Cap nhat thanh cong\n");
+                    break;
+                }
+                case 2: {
+                    System.out.println("Lai suat huy dong hien tai la: " + adminSeviceManager.getInterestRate());
+                    break;
+                }
+                case 3: {
+                    showAdminMenu();
+                    break;
+                }
+            }
+        } while (true);
+    }
+
+    public static void adminAddNewAccount() {
+        System.out.printf("\n\nYou are in: Admin add Account Page\n\n");
+        System.out.print("Enter name:   ");
+        String name = scanner.nextLine();
+
+        String birthday;
+        while (true) {
+            System.out.print("Enter birthday(dd/MM/yyyy):   ");
+            birthday = scanner.nextLine();
+            if (isBirthday(birthday)) {
+                break;
+            } else {
+                System.out.println("This birthday is not valid");
+            }
+        }
+        System.out.print("Enter phone number:   ");
+        String phoneNum = scanner.nextLine();
+        String email;
+        while (true){
+            System.out.print("Enter email:  ");
+            email = scanner.nextLine();
+            if (trueEmail(email) == false) {
+                System.out.println("This email is not valid");
+            } else if (hasEmail(email, accountDetails)){
+                System.out.println("This email is already used");
+            } else {
+                break;
+            }
+         }
+         System.out.print("Enter address:  ");
+         String address = scanner.nextLine();
+         System.out.print("Enter gender:  ");
+         String gender = scanner.nextLine();
+
+         System.out.print("Enter national ID:  ");
+         String nationalId = scanner.nextLine();
+         Customer regCus = hasNationalID(nationalId, accountDetails);
+
+         if (regCus != null) {
+            if (regCus.getEnabled() == true) {
+                System.out.println("ERROR: This nationalId is already used, can not add account with this nationalId");
+                showAdminMenu();
+            } 
+         } else {
+            while (true) {
+                
+                System.out.printf("Enter password: ");
+                String password = scanner.nextLine();
+                if (truePass(password)) {
+                    int newid = getRandomNumberUsingInts(100000, 999999);
+                    String accountId = Integer.toString(newid);
+                    AccountDetail customerAcc = new Customer(accountId, password, "customer", 2000000, name, birthday, 
+                                               phoneNum, email, nationalId, address, gender,
+                                               50, true, 0, depositList, transactionList);
+                         
+                    accountDetails.add(customerAcc);
+                    System.out.println(customerAcc.toString());
+                    System.out.println("\nyou have successfully added a account!\n");
+                    System.out.println("MYdebug--->" + accountDetails.toString());
+                    break;
+                } else {
+                    System.out.println("Password must be between 8 and 15 characters and must contain uppercase, lowercase letters and numbers");
+                }
+            }
+        }
+
+        showAdminMenu();
+    }
+
+    public static void adminShowAccountListInfor() {
+        System.out.println("----------Account List Infors:----------------");
+        for (AccountDetail accountDetail : accountDetails) {
+            if(accountDetail.getRole().equals(ConstantVars.LOGIN_AS_ADMIN)) {
+                System.out.println(accountDetail.toString());
+            } else if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                Customer customer = (Customer) accountDetail;
+                System.out.println(customer.toString());
+            }
+        }
+        System.out.println("----------////////////////////----------------");
+    }
+
+    public static void adminUpdateTrustLevel () {
+        System.out.printf("Nhap so CCCD: ");
+        String nationalID = scanner.nextLine();
+
+        System.out.printf("Nhap trust level [0-100]: ");
+        int newTrustLevel = Integer.parseInt(scanner.nextLine());
+
+        for (AccountDetail accountDetail : accountDetails) {
+            if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                Customer customer = (Customer) accountDetail;
+                if (customer.getNationalId().equals(nationalID)) {
+                    customer.setTrustLevel(newTrustLevel);
+                }
+            }
+        }
+
+    }
+
+    public static void adminChangeAccountInfor() {
+        System.out.println("[1] Cap nhat Password");
+        System.out.println("[2] Cap nhat Name");
+        System.out.println("[3] Cap nhat Birthday");
+        System.out.println("[4] Cap nhat phoneNum");
+        System.out.println("[5] Cap nhat email");
+        System.out.println("[6] Cap nhat dia chi");
+        System.out.println("[7] Cap nhat gioi tinh");
+        System.out.println("[8] Cap nhat trustlevel");
+        System.out.println("[9] Cap nhat account Enable");
+        System.out.println("[10] Quay lai-> trang Admin");
+
+        int menu1;
+        do {
+            System.out.printf("Nhap lua chon: ");
+            menu1 = Integer.parseInt(scanner.nextLine());
+
+            switch (menu1) {
+                case 1:{
+                    
+                    break;
+                }
+                case 2: {
+                    // ();
+                    break;
+                }
+                case 3: {
+                    // ();
+                    break;
+                }
+                case 4: {
+                    //a
+                    break;
+                }
+                case 5:{
+                    //
+                    break;
+                }
+                case 6: {
+                    
+                    break;
+                }
+                case 7: {
+                    
+                    break;
+                }
+                case 8: {//trustlevel
+                    adminUpdateTrustLevel();
+                    break;
+                }
+                case 9: {
+                    
+                    break;
+                }
+                case 10: {
+                    showAdminMenu();
+                    break;
+                }
+                default:
+                    System.exit(0);
+            }
+        } while (menu1 != 6);
+    }
+
+    public static void adminDeleteAccount() {
+        System.out.printf("Nhap so AccountID can xoa: ");
+        String accountIdDel = scanner.nextLine();
+
+        Iterator<AccountDetail> iterator = accountDetails.iterator();
+
+        while(iterator.hasNext()) {
+            AccountDetail acc = iterator.next();
+
+            if (acc.getAccountId().equals(accountIdDel)) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
+    
     public static void showAdminMenu() {
         System.out.printf("\n\nChuc nang cua Admin\n");
         System.out.println("[1] Them Account customer");
         System.out.println("[2] Sua Account customer");
         System.out.println("[3] Xoa Account customer");
-        System.out.println("[4] Quan li lai suat tiet kiem");
-        System.out.println("[5] Kiem tra nguoi dung co phai khac hang tiem nang");
+        System.out.println("[4] Quan ly lai suat tiet kiem");
+        System.out.println("[5] Show thong tin Account List");
         System.out.println("[6] Quit");
-
-        System.out.printf("Nhap lua chon: ");
 
         int menu1;
         do {
+            System.out.printf("Nhap lua chon: ");
             menu1 = Integer.parseInt(scanner.nextLine());
 
             switch (menu1) {
                 case 1:{
-                    // addAcc();
+                    adminAddNewAccount();
                     break;
                 }
                 case 2: {
-                    // changeAccount();
+                    adminChangeAccountInfor();
                     break;
                 }
                 case 3: {
-                    // deleteAccount();
+                    adminDeleteAccount();
                     break;
                 }
                 case 4: {
-                    // interestRate();
+                    adminSavingInterestPage();
                     break;
                 }
                 case 5:{
-                    // customerTrustlevel();
+                    adminShowAccountListInfor();
                     break;
                 }
                 case 6: {
@@ -316,10 +535,11 @@ public class Main{
 
 
     public static void registerAccount(){
-        accountDetails.add(acc1); //them tam de thu
+        scanner.nextLine();
         System.out.printf("\n\nYou are in: Register New Account Page\n\n");
         System.out.print("Enter name:   ");
         String name = scanner.nextLine();
+
         String birthday;
         while (true) {
             System.out.print("Enter birthday(dd/MM/yyyy):   ");
@@ -360,26 +580,35 @@ public class Main{
                 while (true) {
                     System.out.printf("Enter password: ");
                     String password = scanner.nextLine();
+
                     if (truePass(password)) {
-                        int newid = getRandomNumberUsingInts(100000, 999999);
-                        String accountId = Integer.toString(newid);
+                        //Apply KYC Verify new customer
+                        AccountDetail customerDetail = (AccountDetail) regCus;
+                        if (KnowYourCustomer.verifyCustomer(nationalId, accountDetails, customerDetail) == true) {
+                            int newid = getRandomNumberUsingInts(100000, 999999);
+                            String accountId = Integer.toString(newid);
+        
+                            regCus.setName(name);;
+                            regCus.setBirthday(birthday);
+                            regCus.setEmail(email);
+                            regCus.setPhoneNum(phoneNum);
+                            regCus.setAddress(address);
+                            regCus.setGender(gender);
+                            regCus.setAccountId(accountId);
+                            regCus.setPassword(password);
+                            regCus.setRole("customer");
+                            regCus.setIsAccountEnabled(true);
     
-                        regCus.setName(name);;
-                        regCus.setBirthday(birthday);
-                        regCus.setEmail(email);
-                        regCus.setPhoneNum(phoneNum);
-                        regCus.setAddress(address);
-                        regCus.setGender(gender);
-                        regCus.setAccountId(accountId);
-                        regCus.setPassword(password);
-                        regCus.setRole("customer");
-                        regCus.setIsAccountEnabled(true);
-    
-                        System.out.println("\nWelcome to you have successfully registered!\n");
-    
-                        System.out.println(regCus.toString());
-    
-    
+                            
+        
+                            System.out.println("\nWelcome to you have successfully registered!\n");
+        
+                            System.out.println("MYdebug--->" + accountDetails.toString());
+                        } else {
+                            System.out.println("Dang ky khong thanh cong do lich su tin dung cua ban khong dat.");
+                            System.out.printf("\nYeu cau dang ky truc tiep tai phong giao dich\n\n");
+                        }
+  
                         break;                   
                     } else {
                         System.out.println("Password must be between 8 and 15 characters and must contain uppercase, lowercase letters and numbers");
@@ -399,11 +628,12 @@ public class Main{
                     AccountDetail customerAcc = new Customer(accountId, password, "customer", 2000000, name, birthday, 
                                                phoneNum, email, nationalId, address, gender,
                                                50, true, 0, depositList, transactionList);
-
+                         
                     accountDetails.add(customerAcc);
                     System.out.println(customerAcc.toString());
                     System.out.println("\nWelcome to you have successfully registered!\n");
-                    break;                   
+                    System.out.println("MYdebug--->" + accountDetails.toString());
+                    break;
                 } else {
                     System.out.println("Password must be between 8 and 15 characters and must contain uppercase, lowercase letters and numbers");
                 }
@@ -421,17 +651,17 @@ public class Main{
         //TEST data
         accountDetails.add((AccountDetail) new Admin("100001", "Admin@123", "admin"));
         accountDetails.add((AccountDetail) new Customer("123456", "123", "customer", 15000000, "Hoang", "18/06/1998",
-        "021932184", "Hoang@gmail.com", "123456", "address", "MALE", 90,
-        true, 200000, depositList, transactionList));
+        "021932184", "Hoang@gmail.com", "123456", "address", "MALE", 10,
+        false, 200000, depositList, transactionList));
         accountDetails.add((AccountDetail) new Customer("123457", "123", "customer", 15000000, "Hoang", "18/06/1998",
         "021932184", "Hoang@gmail.com", "123457", "address", "MALE", 90,
-        true, 200000, depositList, transactionList));
+        false, 200000, depositList, transactionList));
         //-----------
 
-        openScanner();
+        openSession();
         
         mainLoop();
 
-        closeScanner();
+        closeSession();
     }
 }

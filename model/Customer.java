@@ -216,4 +216,11 @@ public class Customer extends AccountDetail {
         return isAccountEnabled;
     }
 
+    @Override
+    public String toString() {
+        return "\nCustomer [" + super.toString() + " || address=" + address + ", balance=" + balance + ", birthday=" + birthday
+                + ", depositTotalAmount=" + depositTotalAmount + ", email=" + email + ", gender=" + gender
+                + ", isAccountEnabled=" + isAccountEnabled + ", name=" + name + ", nationalId=" + nationalId
+                + ", phoneNum=" + phoneNum + ", trustLevel=" + trustLevel + "]";
+    }
 }

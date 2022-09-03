@@ -1,9 +1,18 @@
 package model.serviceImpl;
 import java.time.LocalDate;
+import java.util.List;
+
 import model.Account;
 import model.service.IAdminService;
+import utils.ConstantVars;
+import model.*;
 
 public class AdminService implements IAdminService{
+    SavingInterestRate savingInterestRate;
+
+    public void initAdminService() {
+        savingInterestRate = new SavingInterestRate();
+    }
 
     @Override
     public boolean addAcc(Account account) {
@@ -89,14 +98,26 @@ public class AdminService implements IAdminService{
     }
 
     @Override
-    public void updateCustomerTrustLevel(int newLevel, String nationalID) {
-
-        
+    public void updateInterestRate(double newInterestRate) {
+        savingInterestRate.setInterestRate(newInterestRate);
     }
 
     @Override
-    public void updateInterestRate(double newInterestRate) {
-        
+    public double getInterestRate() {
+        return savingInterestRate.getInterestRate();
+    }
+
+    @Override
+    public void updateTrustLevelbyNationalID(List<AccountDetail> accountDetails, String nationalID, int newTrustLevel) {
+        for (AccountDetail accountDetail : accountDetails) {
+            if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                Customer cus = (Customer) accountDetail;
+    
+                if (nationalID.equals(cus.getNationalId())) {
+                    cus.setTrustLevel(newTrustLevel);
+                }
+            }
+        }
     }
     
 }

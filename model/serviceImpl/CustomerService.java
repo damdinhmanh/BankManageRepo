@@ -82,6 +82,19 @@ public class CustomerService implements ICustomerService {
             }
         }
     }
+    public Customer returnCustomer(String accountID, List<AccountDetail> accountDetails) {
+        Customer customerReturn = null;
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+                if (cus.getNationalId().equals(accountID)) {
+                    customerReturn = cus;
+                    break;
+                }
+            }
+        }
+        return customerReturn;
+    }
 
     @Override
     public void updateAccPassword(String accountID, List<AccountDetail> accountDetails) {
@@ -96,13 +109,7 @@ public class CustomerService implements ICustomerService {
                 System.out.println("Mat khau nay khong dung dang");
             }
         }
-        for (AccountDetail acc : accountDetails) {
-            if (acc.getAccountId().equals(accountID)) {
-                acc.setPassword(newPassword);
-                break;
-        }
-       
-    }
+        returnCustomer(accountID, accountDetails).setPassword(newPassword);
         System.out.println("Doi mat khau thanh cong!!!");
     }
 
@@ -111,15 +118,7 @@ public class CustomerService implements ICustomerService {
         // TODO Auto-generated method stub
         System.out.print("Nhap ten moi: ");
         String newName = scanner.nextLine();
-        for (AccountDetail acc : accountDetails) {
-            if (acc instanceof Customer) {
-                Customer cus = (Customer) acc;
-                if (cus.getNationalId().equals(accountID)) {
-                    cus.setName(newName);
-                    break;
-                }
-            }
-        }
+        returnCustomer(accountID, accountDetails).setName(newName);
         System.out.println("Ten cua ban da duoc thay doi thanh cong!!!");
     }
 
@@ -136,15 +135,7 @@ public class CustomerService implements ICustomerService {
                 System.out.println("Ngay sinh phai dung dinh dang dd/MM/yyyy");
             }
         }
-        for (AccountDetail acc : accountDetails) {
-            if (acc instanceof Customer) {
-                Customer cus = (Customer) acc;
-                if (cus.getNationalId().equals(accountID)) {
-                    cus.setBirthday(newBirthday);
-                    break;
-                }
-            }
-        }
+        returnCustomer(accountID, accountDetails).setBirthday(newBirthday);;
         System.out.println("Ngay sinh da duoc thay doi thanh cong!!!");
        
     }
@@ -164,15 +155,7 @@ public class CustomerService implements ICustomerService {
                 break;
             }
          }
-         for (AccountDetail acc : accountDetails) {
-            if (acc instanceof Customer) {
-                Customer cus = (Customer) acc;
-                if (cus.getNationalId().equals(accountID)) {
-                    cus.setPhoneNum(newPhone);
-                    break;
-                }
-            }
-        }
+        returnCustomer(accountID, accountDetails).setPhoneNum(newPhone);;
         System.out.println("So dien thoai cua ban da duoc thay doi thanh cong!!!");
         
     }
@@ -192,15 +175,7 @@ public class CustomerService implements ICustomerService {
                 break;
             }
          }
-         for (AccountDetail acc : accountDetails) {
-            if (acc instanceof Customer) {
-                Customer cus = (Customer) acc;
-                if (cus.getNationalId().equals(accountID)) {
-                    cus.setEmail(newEmail);
-                    break;
-                }
-            }
-        }
+        returnCustomer(accountID, accountDetails).setEmail(newEmail);;
         System.out.println("Email cua ban da duoc thay doi thanh cong!!!");
         
     }
@@ -210,15 +185,7 @@ public class CustomerService implements ICustomerService {
         // TODO Auto-generated method stub
         System.out.print("Nhap dia chi moi: ");
         String newAddress = scanner.nextLine();
-        for (AccountDetail acc : accountDetails) {
-            if (acc instanceof Customer) {
-                Customer cus = (Customer) acc;
-                if (cus.getNationalId().equals(accountID)) {
-                    cus.setAddress(newAddress);
-                    break;
-                }
-            }
-        }
+        returnCustomer(accountID, accountDetails).setAddress(newAddress);;
         System.out.println("Thay doi dia chi thanh cong!!!");
     }
 
@@ -227,15 +194,7 @@ public class CustomerService implements ICustomerService {
         // TODO Auto-generated method stub
         System.out.print("Nhap gioi tinh moi: ");
         String newGender = scanner.nextLine();
-        for (AccountDetail acc : accountDetails) {
-            if (acc instanceof Customer) {
-                Customer cus = (Customer) acc;
-                if (cus.getNationalId().equals(accountID)) {
-                    cus.setGender(newGender);
-                    break;
-                }
-            }
-        }
+        returnCustomer(accountID, accountDetails).setGender(newGender);
         System.out.println("Gioi tinh cua ban da duoc thay doi!!!");
         
     }

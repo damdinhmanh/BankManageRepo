@@ -137,7 +137,7 @@ public class Main{
             System.out.println("[4] Kiem tra danh sach so tiet kiem");
             System.out.println("[5] Lich su giao dich");
             System.out.println("[6] Kiem tra so du");
-            System.out.println("[7] Xem thông tin cá nhân");
+            System.out.println("[7] Xem thông tin ca nhân");
             System.out.println("[8] Sửa thông tin");
             System.out.println("[9] Thoat");
     

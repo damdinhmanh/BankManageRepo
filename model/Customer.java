@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,31 +14,33 @@ public class Customer extends AccountDetail {
     private String nationalId;
     private String address;
     private String gender;
-    private String trustLevel;
+    private int trustLevel;
     private boolean isAccountEnabled;
     private int depositTotalAmount;
     private List<DepositDetail> depositList = new ArrayList<DepositDetail>();
     private List<TransactionHistory> transactionList = new ArrayList<TransactionHistory>();
-
     
-    public Customer(String accountId, String password, String role, int balance, String name, LocalDate birthday,
-            String phoneNum, String email, String nationalId, String address, String gender, boolean isAccountEnabled) {
+    public Customer(String accountId, String password, String role, int balance, String name, String birthday,
+            String phoneNum, String email, String nationalId, String address, String gender, int trustlevel,
+            boolean isAccountEnabled, int depositTotalAmount, List<DepositDetail> depositList,
+            List<TransactionHistory> transactionList) {
         super(accountId, password, role);
         this.balance = balance;
         this.name = name;
-        this.birthday = birthday;
         this.phoneNum = phoneNum;
         this.email = email;
         this.nationalId = nationalId;
         this.address = address;
         this.gender = gender;
-        this.trustLevel = trustLevel;
+        this.trustLevel = trustlevel;
         this.isAccountEnabled = isAccountEnabled;
-        // this.depositTotalAmount = depositTotalAmount;
-        // this.depositList = depositList;
-        // this.transactionList = transactionList;
+        this.depositTotalAmount = depositTotalAmount;
+        this.depositList = depositList;
+        this.transactionList = transactionList;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate birth = LocalDate.parse(birthday, formatter);
+        this.birthday = birth;
     }
-
 
     /**
      * @return int return the balance
@@ -77,8 +80,10 @@ public class Customer extends AccountDetail {
     /**
      * @param birthday the birthday to set
      */
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
+    public void setBirthday(String birthday) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate birth = LocalDate.parse(birthday, formatter);
+        this.birthday = birth;
     }
 
     /**
@@ -154,21 +159,21 @@ public class Customer extends AccountDetail {
     /**
      * @return String return the trustLevel
      */
-    public String getTrustLevel() {
+    public int getTrustLevel() {
         return trustLevel;
     }
 
     /**
      * @param trustLevel the trustLevel to set
      */
-    public void setTrustLevel(String trustLevel) {
+    public void setTrustLevel(int trustLevel) {
         this.trustLevel = trustLevel;
     }
 
     /**
      * @return boolean return the isAccountEnabled
      */
-    public boolean isIsAccountEnabled() {
+    public boolean getEnabled() {
         return isAccountEnabled;
     }
 
@@ -205,6 +210,10 @@ public class Customer extends AccountDetail {
      */
     public List<TransactionHistory> getTransactionList() {
         return transactionList;
+    }
+
+    public boolean isAccountEnabled() {
+        return isAccountEnabled;
     }
 
 }

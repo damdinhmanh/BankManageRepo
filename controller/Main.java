@@ -40,8 +40,7 @@ public class Main{
         while (true) {
             switch (userOption) {
                 case ConstantVars.OPTION_LOGIN_PAGE: {
-                    loginBanking();
-                    showMenu();
+                    loginBankingPage();
                     break;
                 }
 
@@ -54,18 +53,21 @@ public class Main{
     }
     
 
-    private static void showMenu() {
-        System.out.println("Chuc nang cua Admin ");
+    public static void showAdminMenu() {
+        System.out.printf("\n\nChuc nang cua Admin\n");
         System.out.println("[1] Them Account customer");
         System.out.println("[2] Sua Account customer");
         System.out.println("[3] Xoa Account customer");
         System.out.println("[4] Quan li lai suat tiet kiem");
         System.out.println("[5] Kiem tra nguoi dung co phai khac hang tiem nang");
         System.out.println("[6] Quit");
-            int menu1;
+
+        System.out.printf("Nhap lua chon: ");
+
+        int menu1;
         do {
             menu1 = Integer.parseInt(scanner.nextLine());
-            scanner.nextLine();
+
             switch (menu1) {
                 case 1:{
                     // addAcc();
@@ -81,9 +83,11 @@ public class Main{
                 }
                 case 4: {
                     // interestRate();
+                    break;
                 }
                 case 5:{
                     // customerTrustlevel();
+                    break;
                 }
                 case 6: {
                     mainLoop();
@@ -93,56 +97,67 @@ public class Main{
                     System.exit(0);
             }
         } while (menu1 != 6);
-        
-            System.out.println("Chuc nang cua Customer");
-            System.out.println("[1] Chuyen tien");
-            System.out.println("[2] Gui tiet kiem");
-            System.out.println("[3] Rut tiet kiem");
-            System.out.println("[4] Kiem tra danh sach so tiet kiem");
-            System.out.println("[5] Lich su giao dich");
-            System.out.println("[6] Kiem tra so du");
-                int menu2;
-            do {
-                menu2 = Integer.parseInt(scanner.nextLine());
-                scanner.nextLine();
-                switch (menu2) {
-                    case 1:{
-                        // chuyentien
-                        break;
-                    }
-                    case 2: {
-                    //    gui tiet kiem
-                        break;
-                    }
-                    case 3: {
-                    //    rut tiet kiem
-                        break;
-                    }
-                    case 4: {
-                    // Kiem tra danh sach so tiet kiem
-                    }
-                    case 5:{
-                    // Lich su giao dich
-                    }
-                    case 6:{
-                    // Kiem tra so du
-                    }
-                    case 7: {
-                        mainLoop();
-                        break;
-                    }
-                    default:
-                        System.exit(0);
-                }
-            } while (menu2 != 7);
     }
 
-    public static void loginBanking() {
+    public static void showCustomerMenu() {
+        System.out.printf("\n\nChuc nang cua Customer\n");
+        System.out.println("[1] Chuyen tien");
+        System.out.println("[2] Gui tiet kiem");
+        System.out.println("[3] Rut tiet kiem");
+        System.out.println("[4] Kiem tra danh sach so tiet kiem");
+        System.out.println("[5] Lich su giao dich");
+        System.out.println("[6] Kiem tra so du");
+
+        System.out.printf("Nhap lua chon: ");
+
+        int menu2;
+        do {
+            menu2 = Integer.parseInt(scanner.nextLine());
+
+            switch (menu2) {
+                case 1:{
+                    // chuyentien
+                    break;
+                }
+                case 2: {
+                //    gui tiet kiem
+                    break;
+                }
+                case 3: {
+                //    rut tiet kiem
+                    break;
+                }
+                case 4: {
+                // Kiem tra danh sach so tiet kiem
+                    break;
+                }
+                case 5:{
+                // Lich su giao dich
+                    break;
+                }
+                case 6:{
+                // Kiem tra so du
+                    break;
+                }
+                case 7: {
+                    mainLoop();
+                    break;
+                }
+                default:
+                    System.exit(0);
+            }
+        } while (menu2 != 7);
+    }
+
+    public static void loginBankingPage() {
         System.out.println("----Login Page----");
         scanner.nextLine();
 
+        String loginType = "";
+
         boolean kiemTraGiaTriAccountId = false;
         String accountID;
+
         do {
             System.out.print("Nhap accountId: ");
             accountID = scanner.nextLine();
@@ -153,10 +168,12 @@ public class Main{
                 for (AccountDetail accountDetail : accountDetails) {
                     if (accountID.equals(accountDetail.getAccountId())) {
                         kiemTraGiaTriAccountId = true;
-                    }else{
-                        kiemTraGiaTriAccountId = false;
-                        System.out.println("Kiem tra lai AccountId!!!");
-                    }  
+                        break;
+                    } 
+                }
+
+                if (kiemTraGiaTriAccountId == false) {
+                    System.out.println("Kiem tra lai AccountId!!!");
                 }
             }
 
@@ -169,24 +186,22 @@ public class Main{
             String password = scanner.nextLine();
             if(checkPass(password) == false){
                 System.out.println("Ban nhap sai dinh dang!!! ");
-                scanner.nextLine();
                 kiemTraGiatriPassword = false;
             }else{
                 for (AccountDetail accountDetail : accountDetails) {
                     if (password.equals(accountDetail.getPassword()) && accountID.equals(accountDetail.getAccountId())) {
                         kiemTraGiatriPassword = true;
-                    }else{
-                        kiemTraGiatriPassword = false;
-                        System.out.println("Kiem tra lai Password!!!");
-                        scanner.nextLine();
+                        loginType = accountDetail.getRole(); 
+                        break;
                     }
+                }
+
+                if (kiemTraGiatriPassword == false) {
+                    System.out.println("Kiem tra lai Password!!!");
                 }
             }
         } while(kiemTraGiatriPassword == false);
         
-       
-
-
         while(true){
             int newCapcha = getRandomNumberUsingInts(10000, 99999);
             System.out.println("Nhap ma bao ve sau: " + newCapcha);
@@ -194,15 +209,21 @@ public class Main{
             int inputCapcha = scanner.nextInt();
             
             if(newCapcha == inputCapcha){
-                System.out.println("Nhap dung capcha");
+                //System.out.println("Nhap dung capcha");
                 break;
             }else{
                 System.out.println("Ban da nhap sai ma bao ve , Yeu cau nhap lai!!!");
             }
         }
 
-        System.out.println("Dang nhap thanh cong !!!");
+        System.out.printf("\nin chao mung! Ban da dang nhap thanh cong !");
         scanner.nextLine();
+
+        if (loginType.equals(ConstantVars.LOGIN_AS_ADMIN)) {
+            showAdminMenu();
+        } else if (loginType.equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+            showCustomerMenu();
+        }
        
     }
 
@@ -213,8 +234,8 @@ public class Main{
 
     public static void main(String[] args) { 
         accountDetails.add((AccountDetail) new Admin("100001", "Admin@123", "admin"));
-        accountDetails.add((AccountDetail) new Customer("100002", "Customer@1", "customer1", 100000000, "Hieu", LocalDate.of(1999, 07, 27), "0966759751", "hieu@gmail.com", "nationalId", "Ha Noi", "Nam", false));
-        accountDetails.add((AccountDetail) new Customer("100003", "Customer@2", "customer2", 100000000, "Hoang", LocalDate.of(1998, 04, 27), "0961256789", "hoang@gmail.com", "nationalId", "Ha Noi", "Nam", false));
+        accountDetails.add((AccountDetail) new Customer("100002", "Customer@1", "customer", 100000000, "Hieu", LocalDate.of(1999, 07, 27), "0966759751", "hieu@gmail.com", "nationalId", "Ha Noi", "Nam", false));
+        accountDetails.add((AccountDetail) new Customer("100003", "Customer@2", "customer", 100000000, "Hoang", LocalDate.of(1998, 04, 27), "0961256789", "hoang@gmail.com", "nationalId", "Ha Noi", "Nam", false));
         openScanner();
         ViewOption.displayMainStartView();
         mainLoop();
@@ -226,7 +247,21 @@ public class Main{
         return Pattern.matches(PASSWORD_PATTERN, pass);
     }
     static boolean checkAccountId(String accountID) {
-        return Pattern.matches(PASSWORD_PATTERN, accountID);
+        boolean isMatchFormat = true;
+
+        if (accountID.length() != 6) {
+            isMatchFormat = false;
+            return isMatchFormat;
+        }
+
+        for(int idx = 0; idx < accountID.length(); idx++) {
+            char aCharacter = accountID.charAt(idx);
+            if (aCharacter < '0' && aCharacter > '9') {
+                isMatchFormat = false;
+            }
+        }
+
+        return isMatchFormat;
     }
 
 }

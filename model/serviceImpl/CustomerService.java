@@ -358,9 +358,9 @@ public class CustomerService implements ICustomerService {
         int fromTranID = getTransHistotryRefID();
         LocalDateTime curDateTime = LocalDateTime.now();
         int fromBalance = fromCustomer.getBalance();
-        fromBalance += depCustomer.getDepositAmount();
+        fromBalance += (depCustomer.getDepositAmount() + depCustomer.getDepositAmount()*depCustomer.getDepositInterestRate());
         fromCustomer.setBalance(fromBalance);
-        String histContent = "Rut Tiet Kiem-STK: " + fromCustomer.getAccountId() + ", SD thay doi: +" + depCustomer.getDepositAmount() + "VND, luc " + curDateTime.toString() + ", So du: " + fromBalance + ", RefID: " + fromTranID;
+        String histContent = "Rut Tiet Kiem-STK: " + fromCustomer.getAccountId() + ", SD thay doi: +" + (depCustomer.getDepositAmount()*depCustomer.getDepositInterestRate()) + "VND, luc " + curDateTime.toString() + ", So du: " + fromBalance + ", RefID: " + fromTranID;
         TransactionHistory fromTranHist = new TransactionHistory(fromTranID, curDateTime, histContent);
         fromCustomer.addTransactionHist(fromTranHist);
 

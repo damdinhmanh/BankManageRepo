@@ -1,9 +1,9 @@
 package model;
+
 public class AccountDetail {
     private String accountId;
     private String password;
     private String role;
-
 
     public AccountDetail(String accountId, String password, String role) {
         this.accountId = accountId;

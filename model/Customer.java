@@ -19,7 +19,7 @@ public class Customer extends AccountDetail {
     private int depositTotalAmount;
     private List<DepositDetail> depositList = new ArrayList<DepositDetail>();
     private List<TransactionHistory> transactionList = new ArrayList<TransactionHistory>();
-    
+
     public Customer(String accountId, String password, String role, int balance, String name, String birthday,
             String phoneNum, String email, String nationalId, String address, String gender, int trustlevel,
             boolean isAccountEnabled, int depositTotalAmount, List<DepositDetail> depositList,
@@ -224,7 +224,6 @@ public class Customer extends AccountDetail {
         this.depositList.add(depositHist);
     }
 
-
     public void setTransactionList(List<TransactionHistory> transactionList) {
         this.transactionList = transactionList;
     }
@@ -243,7 +242,8 @@ public class Customer extends AccountDetail {
 
     @Override
     public String toString() {
-        return "\nCustomer [" + super.toString() + " || address=" + address + ", balance=" + balance + ", birthday=" + birthday
+        return "\nCustomer [" + super.toString() + " || address=" + address + ", balance=" + balance + ", birthday="
+                + birthday
                 + ", depositTotalAmount=" + depositTotalAmount + ", email=" + email + ", gender=" + gender
                 + ", isAccountEnabled=" + isAccountEnabled + ", name=" + name + ", nationalId=" + nationalId
                 + ", phoneNum=" + phoneNum + ", trustLevel=" + trustLevel + "]";

@@ -6,7 +6,6 @@ import java.util.List;
 public class Account {
     private List<AccountDetail> accountList = new ArrayList<AccountDetail>();
 
-
     /**
      * @return List<AccountDetail> return the accountList
      */

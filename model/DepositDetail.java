@@ -18,8 +18,6 @@ public class DepositDetail {
         this.depositInterestRate = depositInterestRate;
     }
 
-    
-
     @Override
     public String toString() {
         return "\nDepositDetail [DateTime=" + deposiDateTime + ", Amount=" + depositAmount + "VND, RefID="

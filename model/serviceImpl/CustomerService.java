@@ -21,8 +21,9 @@ public class CustomerService implements ICustomerService {
     private Scanner scanner;
 
     public void openScanner(Scanner mainScanner) {
-         this.scanner = mainScanner;
+        this.scanner = mainScanner;
     }
+
     public void closeScanner() {
     }
 
@@ -30,18 +31,22 @@ public class CustomerService implements ICustomerService {
         String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()-_[{}]:;',?/*~$^+=<>]).{8,15}$";
         return Pattern.matches(PASSWORD_PATTERN, password);
     }
+
     public boolean checkBirthday(String birthday) {
         String BIRTHDAY_PATTERN = "^([0-2][0-9]||3[0-1])/(0[0-9]||1[0-2])/([0-9][0-9])?[0-9][0-9]$";
         return Pattern.matches(BIRTHDAY_PATTERN, birthday);
     }
+
     public static boolean checkEmail(String email) {
         String EMAIL_PATTERN = "^[a-zA-Z][\\w-]+@([\\w]+\\.[\\w]+|[\\w]+\\.[\\w]{2,}\\.[\\w]{2,})$";
         return Pattern.matches(EMAIL_PATTERN, email);
     }
+
     public static boolean checkPhone(String phoneNum) {
-       String PHONE_PATTERN = "^[0-9]*$";
-       return Pattern.matches(PHONE_PATTERN, phoneNum);
+        String PHONE_PATTERN = "^[0-9]*$";
+        return Pattern.matches(PHONE_PATTERN, phoneNum);
     }
+
     public static boolean hasEmail(String email, List<AccountDetail> accountDetails) {
         boolean isHas = false;
         for (AccountDetail acc : accountDetails) {
@@ -55,6 +60,7 @@ public class CustomerService implements ICustomerService {
         }
         return isHas;
     }
+
     public static boolean hasPhone(String phoneNum, List<AccountDetail> accountDetails) {
         boolean isHas = false;
         for (AccountDetail acc : accountDetails) {
@@ -68,24 +74,27 @@ public class CustomerService implements ICustomerService {
         }
         return isHas;
     }
+
     public void showInfoCustomer(String accountID, List<AccountDetail> accountDetails) {
         for (AccountDetail acc : accountDetails) {
             if (acc instanceof Customer) {
-            Customer cus = (Customer) acc;
-               if (cus.getAccountId().equals(accountID)) {
-                   System.out.println("\nThong tin cua ban:");
-                   System.out.println("Ten: " +cus.getName());
-                   System.out.println("Ngay sinh: " +cus.getBirthday());
-                   System.out.println("So dien thoai: " +cus.getPhoneNum());
-                   System.out.println("Email: " +cus.getEmail());
-                   System.out.println("Dia chi: " +cus.getAddress());
-                   System.out.println("Gioi tinh: " +cus.getGender());
-                   System.out.println("Mat khau: " +cus.getPassword());  //hiện pass để check, xóa sau!!!!
-                   System.out.println("So du: " + cus.getBalance());  //hiện pass để check, xóa sau!!!!
+                Customer cus = (Customer) acc;
+                if (cus.getAccountId().equals(accountID)) {
+                    System.out.println(">---------------------------------------------------->");
+                    System.out.println("\nYour account infors:");
+                    System.out.println("Name: " + cus.getName());
+                    System.out.println("Birthday: " + cus.getBirthday());
+                    System.out.println("Phonenum: " + cus.getPhoneNum());
+                    System.out.println("Email: " + cus.getEmail());
+                    System.out.println("Address: " + cus.getAddress());
+                    System.out.println("Gender: " + cus.getGender());
+                    System.out.println("Password: " + cus.getPassword()); 
+                    System.out.println("Balance: " + cus.getBalance());
                 }
             }
         }
     }
+
     public Customer returnCustomer(String accountID, List<AccountDetail> accountDetails) {
         Customer customerReturn = null;
         for (AccountDetail acc : accountDetails) {
@@ -102,105 +111,107 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void updateAccPassword(String accountID, List<AccountDetail> accountDetails) {
-        // TODO Auto-generated method stub
+
         String newPassword;
         while (true) {
-            System.out.print("Nhap password moi:   ");
+            System.out.print("Input new password: ");
             newPassword = scanner.nextLine();
             if (checkPass(newPassword)) {
                 break;
             } else {
-                System.out.println("Mat khau nay khong dung dang");
+                System.out.println("Password wrong format");
             }
         }
         returnCustomer(accountID, accountDetails).setPassword(newPassword);
-        System.out.println("Doi mat khau thanh cong!!!");
+        System.out.println("Update password sucessfully!");
     }
 
     @Override
     public void updateAccName(String accountID, List<AccountDetail> accountDetails) {
-        // TODO Auto-generated method stub
-        System.out.print("Nhap ten moi: ");
+
+        System.out.print("Input new Name: ");
         String newName = scanner.nextLine();
         returnCustomer(accountID, accountDetails).setName(newName);
-        System.out.println("Ten cua ban da duoc thay doi thanh cong!!!");
+        System.out.println("Update name sucessfully!");
     }
 
     @Override
     public void updateAccBirthday(String accountID, List<AccountDetail> accountDetails) {
-        // TODO Auto-generated method stu
+
         String newBirthday;
         while (true) {
-            System.out.print("Nhap ngay sinh moi (dạng dd/MM/yyyy):   ");
+            System.out.print("Input new birthday (dd/MM/yyyy): ");
             newBirthday = scanner.nextLine();
             if (checkBirthday(newBirthday)) {
                 break;
             } else {
-                System.out.println("Ngay sinh phai dung dinh dang dd/MM/yyyy");
+                System.out.println("Birthday need format as dd/MM/yyyy");
             }
         }
-        returnCustomer(accountID, accountDetails).setBirthday(newBirthday);;
-        System.out.println("Ngay sinh da duoc thay doi thanh cong!!!");
-       
+        returnCustomer(accountID, accountDetails).setBirthday(newBirthday);
+
+        System.out.println("Update birthday sucessfully!");
     }
 
     @Override
     public void updateAccPhoneNum(String accountID, List<AccountDetail> accountDetails) {
-        // TODO Auto-generated method stub
+  
         String newPhone;
         while (true) {
-            System.out.print("Nhap so dien thoai moi:   ");
+            System.out.print("Input new phonenum:   ");
             newPhone = scanner.nextLine();
             if (checkPhone(newPhone) == false) {
-                System.out.println("So dien thoai phai la mot day so!");
-            } else if (hasEmail(newPhone, accountDetails)){
-                System.out.println("So dien thoai nay da duoc su dung!");
+                System.out.println("Phonenum need a numeric format!");
+            } else if (hasPhone(newPhone, accountDetails)) {
+                System.out.println("Phonenum used for other account!");
             } else {
                 break;
             }
-         }
-        returnCustomer(accountID, accountDetails).setPhoneNum(newPhone);;
-        System.out.println("So dien thoai cua ban da duoc thay doi thanh cong!!!");
-        
+        }
+        returnCustomer(accountID, accountDetails).setPhoneNum(newPhone);
+
+        System.out.println("Update phonenum sucessfully!");
+
     }
 
     @Override
     public void updateAccEmail(String accountID, List<AccountDetail> accountDetails) {
-        // TODO Auto-generated method stub
+
         String newEmail;
         while (true) {
-            System.out.print("Nhap so dien thoai moi:   ");
+            System.out.print("Input new email:   ");
             newEmail = scanner.nextLine();
             if (checkEmail(newEmail) == false) {
-                System.out.println("Email vua nhap khong hop le!");
-            } else if (hasEmail(newEmail, accountDetails)){
-                System.out.println("Email nay da duoc su dung!");
+                System.out.println("Email is wrong format!");
+            } else if (hasEmail(newEmail, accountDetails)) {
+                System.out.println("Email used by other account!");
             } else {
                 break;
             }
-         }
-        returnCustomer(accountID, accountDetails).setEmail(newEmail);;
-        System.out.println("Email cua ban da duoc thay doi thanh cong!!!");
+        }
+        returnCustomer(accountID, accountDetails).setEmail(newEmail);
         
+        System.out.println("Update email sucessfully!");
+
     }
 
     @Override
     public void updateAccAddress(String accountID, List<AccountDetail> accountDetails) {
-        // TODO Auto-generated method stub
-        System.out.print("Nhap dia chi moi: ");
+
+        System.out.print("Input new address: ");
         String newAddress = scanner.nextLine();
-        returnCustomer(accountID, accountDetails).setAddress(newAddress);;
-        System.out.println("Thay doi dia chi thanh cong!!!");
+        returnCustomer(accountID, accountDetails).setAddress(newAddress);
+
+        System.out.println("Update address sucessfully!");
     }
 
     @Override
     public void updateAccGender(String accountID, List<AccountDetail> accountDetails) {
-        // TODO Auto-generated method stub
-        System.out.print("Nhap gioi tinh moi: ");
+
+        System.out.print("Input new gender: ");
         String newGender = scanner.nextLine();
         returnCustomer(accountID, accountDetails).setGender(newGender);
-        System.out.println("Gioi tinh cua ban da duoc thay doi!!!");
-        
+        System.out.println("Update gender sucessfully!");
     }
 
     @Override
@@ -209,38 +220,42 @@ public class CustomerService implements ICustomerService {
         return null;
     }
 
-
     @Override
     public boolean regAccountId(String name, LocalDate birthday, String phoneNum, String email, String nationalID,
             String address, Gender gender) {
         // TODO Auto-generated method stub
         return false;
     }
+
     @Override
     public int getCusBalance(String accountID, List<AccountDetail> accountDetails) {
 
         for (AccountDetail acc : accountDetails) {
             if (acc instanceof Customer) {
-            Customer cus = (Customer) acc;
-               if (cus.getAccountId().equals(accountID)) {
-                   System.out.println("\nThong tin cua ban:");
-                   System.out.println("So du: " + cus.getBalance() + "VND");  //hiện pass để check, xóa sau!!!!
+                Customer cus = (Customer) acc;
+                if (cus.getAccountId().equals(accountID)) {
+                    System.out.println(">---------------------------------------------------->");
+                    System.out.println("\nYour account balance:");
+                    System.out.println("Balance: " + cus.getBalance() + "VND");
                 }
             }
         }
 
         return 0;
     }
+
     @Override
     public void getDepositDetails(String accountID, List<AccountDetail> accountDetails) {
         // TODO Auto-generated method stub
-        
+
     }
+
     @Override
     public void getTransactionHistory(String accountID, List<AccountDetail> accountDetails) {
         // TODO Auto-generated method stub
-        
+
     }
+
     @Override
     public void savingDepositTerm(String accountID, int depAmount, int depTerm,
             List<AccountDetail> accountDetails, double interestRate) {
@@ -262,7 +277,8 @@ public class CustomerService implements ICustomerService {
         int fromBalance = fromCustomer.getBalance();
         fromBalance -= depAmount;
         fromCustomer.setBalance(fromBalance);
-        String histContent = "Gui Tiet Kiem-STK: " + fromCustomer.getAccountId() + ", SD thay doi: -" + depAmount + "VND, luc " + curDateTime.toString() + ", So du: " + fromBalance + ", RefID: " + fromTranID;
+        String histContent = "Saving Deposit-AccID: " + fromCustomer.getAccountId() + ", Balance changed: -" + depAmount
+                + "VND, at " + curDateTime.toString() + ", Balance: " + fromBalance + ", RefID: " + fromTranID;
         TransactionHistory fromTranHist = new TransactionHistory(fromTranID, curDateTime, histContent);
         fromCustomer.addTransactionHist(fromTranHist);
 
@@ -272,7 +288,8 @@ public class CustomerService implements ICustomerService {
         cusTotalDeposit += depAmount;
         fromCustomer.setDepositTotalAmount(cusTotalDeposit);
 
-        System.out.println("Gui tiet kiem thanh cong!");
+        System.out.println("Saving deposit sucessfully!");
+        System.out.println(">---------------------------------------------------->");
         System.out.println(histContent);
 
         return;
@@ -281,8 +298,8 @@ public class CustomerService implements ICustomerService {
     static public int getTransHistotryRefID() {
         Random random = new Random();
         return random.ints(100000000, 999999999)
-          .findFirst()
-          .getAsInt();
+                .findFirst()
+                .getAsInt();
     }
 
     @Override
@@ -290,7 +307,7 @@ public class CustomerService implements ICustomerService {
 
         Customer fromCustomer = null;
         Customer toCustomer = null;
-        
+
         for (AccountDetail acc : accountDetails) {
             if (acc instanceof Customer) {
                 Customer cus = (Customer) acc;
@@ -310,30 +327,34 @@ public class CustomerService implements ICustomerService {
         int fromBalance = fromCustomer.getBalance();
         fromBalance -= amount;
         fromCustomer.setBalance(fromBalance);
-        String histContent = "Chuyen Khoan-Tu STK: " + fromCustomer.getAccountId() + " sang STK:" + toCustomer.getAccountId() + ", SD thay doi: -" + amount + "VND, luc " + curDateTime.toString() + ", So du: " + fromBalance + ", RefID: " + fromTranID;
+        String histContent = "Transfer-From AccID: " + fromCustomer.getAccountId() + " To AccID:"
+                + toCustomer.getAccountId() + ", Balance changed: -" + amount + "VND, at " + curDateTime.toString()
+                + ", Balance: " + fromBalance + ", RefID: " + fromTranID;
         TransactionHistory fromTranHist = new TransactionHistory(fromTranID, curDateTime, histContent);
         fromCustomer.addTransactionHist(fromTranHist);
-
 
         int toTranID = getTransHistotryRefID();
         int toBalance = toCustomer.getBalance();
         toBalance += amount;
         toCustomer.setBalance(toBalance);
-        String recvContent = "Nhan Chuyen Khoan- Tu STK: " + fromCustomer.getAccountId() + " sang STK:" + toCustomer.getAccountId() + ", SD thay doi: +" + amount + "VND, luc " + curDateTime.toString() + ", So du: " + toBalance + ", RefID: " + fromTranID;
+        String recvContent = "Received-From AccID: " + fromCustomer.getAccountId() + " to AccID:"
+                + toCustomer.getAccountId() + ", Balance changed: +" + amount + "VND, at " + curDateTime.toString()
+                + ", Balance: " + toBalance + ", RefID: " + fromTranID;
         TransactionHistory toTranHist = new TransactionHistory(fromTranID, curDateTime, recvContent);
         toCustomer.addTransactionHist(toTranHist);
 
-
-        System.out.println("Chuyen khoan thanh cong");
+        System.out.println("Transfer successully!");
+        System.out.println(">---------------------------------------------------->");
         System.out.println(histContent);
 
         // TODO Auto-generated method stub
         return false;
     }
+
     @Override
     public int withDrawSaving(String accountID, int depID, List<AccountDetail> accountDetails) {
         Customer fromCustomer = null;
-        
+
         for (AccountDetail acc : accountDetails) {
             if (acc instanceof Customer) {
                 Customer cus = (Customer) acc;
@@ -345,12 +366,12 @@ public class CustomerService implements ICustomerService {
             }
         }
 
-        DepositDetail depCustomer= null;
+        DepositDetail depCustomer = null;
 
         List<DepositDetail> depListCus = fromCustomer.getDepositList();
 
         for (DepositDetail depositDetail : depListCus) {
-            if (depositDetail.getDepositID()==depID) {
+            if (depositDetail.getDepositID() == depID) {
                 depCustomer = depositDetail;
             }
         }
@@ -358,9 +379,12 @@ public class CustomerService implements ICustomerService {
         int fromTranID = getTransHistotryRefID();
         LocalDateTime curDateTime = LocalDateTime.now();
         int fromBalance = fromCustomer.getBalance();
-        fromBalance += (depCustomer.getDepositAmount() + depCustomer.getDepositAmount()*depCustomer.getDepositInterestRate());
+        fromBalance += (depCustomer.getDepositAmount()
+                + depCustomer.getDepositAmount() * depCustomer.getDepositInterestRate());
         fromCustomer.setBalance(fromBalance);
-        String histContent = "Rut Tiet Kiem-STK: " + fromCustomer.getAccountId() + ", SD thay doi: +" + (depCustomer.getDepositAmount()*depCustomer.getDepositInterestRate()) + "VND, luc " + curDateTime.toString() + ", So du: " + fromBalance + ", RefID: " + fromTranID;
+        String histContent = "Withdraw Deposit-From AccID: " + fromCustomer.getAccountId() + ", Balance changed: +"
+                + (depCustomer.getDepositAmount() + depCustomer.getDepositAmount() * depCustomer.getDepositInterestRate()) + "VND, at "
+                + curDateTime.toString() + ", Balance: " + fromBalance + ", RefID: " + fromTranID;
         TransactionHistory fromTranHist = new TransactionHistory(fromTranID, curDateTime, histContent);
         fromCustomer.addTransactionHist(fromTranHist);
 
@@ -370,15 +394,16 @@ public class CustomerService implements ICustomerService {
 
         Iterator<DepositDetail> iterator = depListCus.iterator();
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             DepositDetail aDept = iterator.next();
-            if (aDept.getDepositID()==depID) {
+            if (aDept.getDepositID() == depID) {
                 iterator.remove();
                 break;
             }
         }
 
-        System.out.println("Rut so tiet kiem thanh cong");
+        System.out.println("Withdraw Deposit Sucessfully!");
+        System.out.println(">---------------------------------------------------->");
         System.out.println(histContent);
         return 0;
     }
@@ -387,12 +412,12 @@ public class CustomerService implements ICustomerService {
         for (AccountDetail acc : accountDetails) {
             if (acc instanceof Customer) {
                 Customer cus = (Customer) acc;
-               if (cus.getAccountId().equals(accountID)) {
+                if (cus.getAccountId().equals(accountID)) {
                     return cus.getDepositTotalAmount();
                 }
             }
         }
-        
+
         return 0;
     }
 
@@ -401,7 +426,7 @@ public class CustomerService implements ICustomerService {
         for (AccountDetail acc : accountDetails) {
             if (acc instanceof Customer) {
                 Customer cus = (Customer) acc;
-               if (cus.getAccountId().equals(accountID)) {
+                if (cus.getAccountId().equals(accountID)) {
                     cus.showDepositHistList();
                     return;
                 }
@@ -416,7 +441,7 @@ public class CustomerService implements ICustomerService {
         for (AccountDetail acc : accountDetails) {
             if (acc instanceof Customer) {
                 Customer cus = (Customer) acc;
-               if (cus.getAccountId().equals(accountID)) {
+                if (cus.getAccountId().equals(accountID)) {
                     cus.showTransactionHistList();
                     return;
                 }

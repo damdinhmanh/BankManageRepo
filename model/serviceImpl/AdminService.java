@@ -1,4 +1,5 @@
 package model.serviceImpl;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import model.service.IAdminService;
 import utils.ConstantVars;
 import model.*;
 
-public class AdminService implements IAdminService{
+public class AdminService implements IAdminService {
     SavingInterestRate savingInterestRate;
 
     public void initAdminService() {
@@ -17,7 +18,7 @@ public class AdminService implements IAdminService{
 
     @Override
     public boolean addAcc(Account account) {
-        
+
         return false;
     }
 
@@ -113,12 +114,12 @@ public class AdminService implements IAdminService{
         for (AccountDetail accountDetail : accountDetails) {
             if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
                 Customer cus = (Customer) accountDetail;
-    
+
                 if (nationalID.equals(cus.getNationalId())) {
                     cus.setTrustLevel(newTrustLevel);
                 }
             }
         }
     }
-    
+
 }

@@ -19,6 +19,7 @@ import model.DepositDetail;
 import model.KnowYourCustomer;
 import model.TransactionHistory;
 import model.serviceImpl.AdminService;
+import model.serviceImpl.CustomerService;
 import view.*;
 import utils.*;
 
@@ -38,8 +39,10 @@ public class Main{
         adminSeviceManager = new AdminService();
         adminSeviceManager.initAdminService();
 
-
         scanner  = new Scanner(System.in);
+
+        cusService = new CustomerService(); //----Hoang them
+        cusService.openScanner(scanner);  //--------Hoang them
     }
 
     public static void closeSession() {
@@ -340,20 +343,25 @@ public class Main{
             }
         } while (menu1 != 6);
     }
-
-    public static void showCustomerMenu() {
-        System.out.printf("\n\nChuc nang cua Customer\n");
-        System.out.println("[1] Chuyen tien");
-        System.out.println("[2] Gui tiet kiem");
-        System.out.println("[3] Rut tiet kiem");
-        System.out.println("[4] Kiem tra danh sach so tiet kiem");
-        System.out.println("[5] Lich su giao dich");
-        System.out.println("[6] Kiem tra so du");
-
-        System.out.printf("Nhap lua chon: ");
-
+    
+    public static void showCustomerMenu() {    // ----Hoang da sua----------------------
+       
         int menu2;
+        
         do {
+            System.out.printf("\n\nChuc nang cua Customer\n");
+            System.out.println("[1] Chuyen tien");
+            System.out.println("[2] Gui tiet kiem");
+            System.out.println("[3] Rut tiet kiem");
+            System.out.println("[4] Kiem tra danh sach so tiet kiem");
+            System.out.println("[5] Lich su giao dich");
+            System.out.println("[6] Kiem tra so du");
+            System.out.println("[7] Xem thông tin ca nhân");
+            System.out.println("[8] Sửa thông tin");
+            System.out.println("[9] Thoat");
+    
+            System.out.printf("Nhap lua chon: ");
+
             menu2 = Integer.parseInt(scanner.nextLine());
 
             switch (menu2) {
@@ -381,15 +389,27 @@ public class Main{
                 // Kiem tra so du
                     break;
                 }
-                case 7: {
+                case 7:{
+                // Xem thong tin ca nhan
+                    cusService.showInfoCustomer(accountIDLogin, accountDetails);
+                    break;
+                }
+                case 8: {
+                // Sua thong tin
+                    updateInfoCustomer();
+                    break;
+                }
+                case 9: {
                     mainLoop();
                     break;
                 }
                 default:
                     System.exit(0);
             }
-        } while (menu2 != 7);
+        } while (menu2 != 9);
     }
+
+    public static String accountIDLogin; //--Login theo bien nay (Hoang them)
 
     public static void loginBankingPage() {
         System.out.println("----Login Page----");
@@ -398,17 +418,16 @@ public class Main{
         String loginType = "";
 
         boolean kiemTraGiaTriAccountId = false;
-        String accountID;
 
         do {
             System.out.print("Nhap accountId: ");
-            accountID = scanner.nextLine();
-            if(checkAccountId(accountID) == false){
+            accountIDLogin = scanner.nextLine();
+            if(checkAccountId(accountIDLogin) == false){
                 System.out.println("Ban nhap sai dinh dang!!! ");
                 kiemTraGiaTriAccountId = false;
             }else{
                 for (AccountDetail accountDetail : accountDetails) {
-                    if (accountID.equals(accountDetail.getAccountId())) {
+                    if (accountIDLogin.equals(accountDetail.getAccountId())) {
                         kiemTraGiaTriAccountId = true;
                         break;
                     } 
@@ -431,7 +450,7 @@ public class Main{
                 kiemTraGiatriPassword = false;
             }else{
                 for (AccountDetail accountDetail : accountDetails) {
-                    if (password.equals(accountDetail.getPassword()) && accountID.equals(accountDetail.getAccountId())) {
+                    if (password.equals(accountDetail.getPassword()) && accountIDLogin.equals(accountDetail.getAccountId())) {
                         kiemTraGiatriPassword = true;
                         loginType = accountDetail.getRole(); 
                         break;
@@ -494,6 +513,24 @@ public class Main{
     //---------------END LOGIN-------------------------------
 
     ///--------------HOANG----------------------------------
+    public static boolean checkPhone(String phoneNum) {
+        String PHONE_PATTERN = "^[0-9]*$";
+        return Pattern.matches(PHONE_PATTERN, phoneNum);
+    }
+    public static boolean hasPhone(String phoneNum, List<AccountDetail> accountDetails) {
+        boolean isHas = false;
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+                if (cus.getPhoneNum().equals(phoneNum)) {
+                    isHas = true;
+                    break;
+                }
+            }
+        }
+        return isHas;
+    }
+
     public static boolean truePass(String password) {
         return Pattern.matches(PASSWORD_PATTERN, password);
     }
@@ -550,8 +587,19 @@ public class Main{
                 System.out.println("This birthday is not valid");
             }
         }
-        System.out.print("Enter phone number:   ");
-        String phoneNum = scanner.nextLine();
+        
+        String phoneNum;
+        while (true) {
+            System.out.print("Enter phone number:   ");
+            phoneNum = scanner.nextLine();
+            if (checkPhone(phoneNum) == false) {
+                System.out.println("This phone number is not valid");
+            } else if (hasEmail(phoneNum, accountDetails)){
+                System.out.println("This phone number is already used");
+            } else {
+                break;
+            }
+         }
         String email;
         while (true){
             System.out.print("Enter email:  ");
@@ -643,6 +691,74 @@ public class Main{
          //Đăng ký thành công quay về trang chủ
          mainLoop();
     }
+    public static void showUpdateInfoCusMenu() {
+        System.out.println("\nTrang chinh sua thong tin");
+        System.out.println("[1] Sua password");
+        System.out.println("[2] Sua ten");
+        System.out.println("[3] Sua ngay sinh ");
+        System.out.println("[4] Sua so dien thoai");
+        System.out.println("[5] Sua email");
+        System.out.println("[6] Sua dia chi");
+        System.out.println("[7] Sua gioi tinh");
+        System.out.println("[8] Thoat");
+
+        System.out.printf("Nhap lua chon: ");
+    }
+    public static CustomerService cusService;
+    public static void updateInfoCustomer(){
+        
+        
+        int menuUpdateInfo;
+        do {
+            showUpdateInfoCusMenu();
+            menuUpdateInfo = Integer.parseInt(scanner.nextLine());
+            switch (menuUpdateInfo) {
+                case 1:{
+                // Sua password
+                    cusService.updateAccPassword(accountIDLogin, accountDetails);
+                    break;
+                }
+                case 2: {
+                // Sua ten
+                    cusService.updateAccName(accountIDLogin, accountDetails);
+                    break;
+                }
+                case 3: {
+                // Sua ngay sinh
+                    cusService.updateAccBirthday(accountIDLogin, accountDetails);
+                    break;
+                }
+                case 4: {
+                // Sua so dien thoai
+                    cusService.updateAccPhoneNum(accountIDLogin, accountDetails);
+                    break;
+                }
+                case 5:{
+                // Sua email
+                    cusService.updateAccEmail(accountIDLogin, accountDetails);
+                    break;
+                }
+                case 6:{
+                // Sua dia chi
+                    cusService.updateAccAddress(accountIDLogin, accountDetails);
+                    break;
+                }
+                case 7:{
+                // Sua gioi tinh
+                    cusService.updateAccGender(accountIDLogin, accountDetails);
+                    break;
+                }
+                case 8: {
+                //  Exit
+                    break;
+                }
+                default:
+                    System.exit(0);
+            }
+        } while (menuUpdateInfo != 8);
+
+
+    }
 
     //-----------HOANG END---------------------
 
@@ -650,9 +766,9 @@ public class Main{
     public static void main(String[] args) { 
         //TEST data
         accountDetails.add((AccountDetail) new Admin("100001", "Admin@123", "admin"));
-        accountDetails.add((AccountDetail) new Customer("123456", "123", "customer", 15000000, "Hoang", "18/06/1998",
+        accountDetails.add((AccountDetail) new Customer("123456", "Hoang@123", "customer", 15000000, "Hoang", "18/06/1998",
         "021932184", "Hoang@gmail.com", "123456", "address", "MALE", 10,
-        false, 200000, depositList, transactionList));
+        true, 200000, depositList, transactionList));
         accountDetails.add((AccountDetail) new Customer("123457", "123", "customer", 15000000, "Hoang", "18/06/1998",
         "021932184", "Hoang@gmail.com", "123457", "address", "MALE", 90,
         false, 200000, depositList, transactionList));

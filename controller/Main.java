@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.regex.Pattern;
 
 import javax.lang.model.element.Element;
@@ -214,8 +215,204 @@ public class Main{
                 }
             }
         }
+    }
+
+    public static void adminUpdatePassword () {
+        System.out.printf("Nhap Account ID: ");
+        String updateAccountID = scanner.nextLine();
+
+        while (true) {         
+            System.out.printf("Enter new password: ");
+            String password = scanner.nextLine();
+
+            if (truePass(password)) {   
+                for (AccountDetail accountDetail : accountDetails) {
+                    if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                        Customer customer = (Customer) accountDetail;
+                        if (customer.getAccountId().equals(updateAccountID)) {
+                            customer.setPassword(password);
+                        }
+                    }
+                }
+
+                break;
+            } else {
+                System.out.println("Password must be between 8 and 15 characters and must contain uppercase, lowercase letters and numbers");
+            }
+        }
+
+        System.out.println("Cap nhat password thanh cong!");
+    }
+
+    public static void adminUpdateName () {
+        System.out.printf("Nhap Account ID: ");
+        String updateAccountID = scanner.nextLine();
+
+        System.out.print("Enter new name:   ");
+        String name = scanner.nextLine();
+
+        for (AccountDetail accountDetail : accountDetails) {
+            if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                Customer customer = (Customer) accountDetail;
+                if (customer.getAccountId().equals(updateAccountID)) {
+                    customer.setName(name);
+                }
+            }
+        }
+
+        System.out.println("Cap nhat ten thanh cong!");
+    }
+
+    public static void adminUpdateBirthday () {
+        System.out.printf("Nhap Account ID: ");
+        String updateAccountID = scanner.nextLine();
+
+        String birthday;
+        while (true) {
+            System.out.print("Enter birthday(dd/MM/yyyy):   ");
+            birthday = scanner.nextLine();
+
+            if (isBirthday(birthday)) {
+                for (AccountDetail accountDetail : accountDetails) {
+                    if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                        Customer customer = (Customer) accountDetail;
+                        if (customer.getAccountId().equals(updateAccountID)) {
+                            customer.setBirthday(birthday);
+                        }
+                    }
+                }
+                break;
+            } else {
+                System.out.println("This birthday is not valid");
+            }
+        }
+
+        System.out.println("Cap nhat birthday thanh cong!");
+    }
+
+    public static void adminUpdatePhonNum () {
+        System.out.printf("Nhap Account ID: ");
+        String updateAccountID = scanner.nextLine();
+
+        String phoneNum;
+        while (true) {
+            System.out.print("Enter phone number:   ");
+            phoneNum = scanner.nextLine();
+            if (checkPhone(phoneNum) == false) {
+                System.out.println("This phone number is not valid");
+            } else if (hasPhone(phoneNum, accountDetails)){
+                System.out.println("This phone number is already used");
+            } else {
+                break;
+            }
+         }
+
+         for (AccountDetail accountDetail : accountDetails) {
+            if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                Customer customer = (Customer) accountDetail;
+                if (customer.getAccountId().equals(updateAccountID)) {
+                    customer.setPhoneNum(phoneNum);
+                }
+            }
+        }
+
+        System.out.println("Cap nhat phoneNum thanh cong!");
+    }
+
+    public static void adminUpdateEmail () {
+        System.out.printf("Nhap Account ID: ");
+        String updateAccountID = scanner.nextLine();
+
+        String email;
+        while (true){
+            System.out.print("Enter email:  ");
+            email = scanner.nextLine();
+            if (trueEmail(email) == false) {
+                System.out.println("This email is not valid");
+            } else if (hasEmail(email, accountDetails)){
+                System.out.println("This email is already used");
+            } else {
+                break;
+            }
+         }
+
+         for (AccountDetail accountDetail : accountDetails) {
+            if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                Customer customer = (Customer) accountDetail;
+                if (customer.getAccountId().equals(updateAccountID)) {
+                    customer.setEmail(email);
+                }
+            }
+        }
+
+        System.out.println("Cap nhat email thanh cong!");
+    }
+
+    public static void adminUpdateAdress () {
+        System.out.printf("Nhap Account ID: ");
+        String updateAccountID = scanner.nextLine();
+        System.out.print("Enter address:  ");
+        String address = scanner.nextLine();
+
+        for (AccountDetail accountDetail : accountDetails) {
+            if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                Customer customer = (Customer) accountDetail;
+                if (customer.getAccountId().equals(updateAccountID)) {
+                    customer.setAddress(address);
+                }
+            }
+        }
+
+        System.out.println("Cap nhat dia chi thanh cong!");
 
     }
+
+    public static void adminUpdateGender () {
+        System.out.printf("Nhap Account ID: ");
+        String updateAccountID = scanner.nextLine();
+        System.out.print("Enter gender:  ");
+        String gender = scanner.nextLine();
+
+        
+        for (AccountDetail accountDetail : accountDetails) {
+            if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                Customer customer = (Customer) accountDetail;
+                if (customer.getAccountId().equals(updateAccountID)) {
+                    customer.setGender(gender);
+                }
+            }
+        }
+
+        System.out.println("Cap nhat gioi tinh thanh cong!");
+    }
+
+    public static void adminUpdateAccountEnableDisable () {
+        System.out.printf("Nhap Account ID: ");
+        String updateAccountID = scanner.nextLine();
+        System.out.print("Enter Account status (Enable: 1, Disable: 0): ");
+        String accIsEnable = scanner.nextLine();
+
+
+        boolean isEnableThisAccount = true;
+
+        if (accIsEnable.equals("1")) {
+            isEnableThisAccount = true;
+        } else if (accIsEnable.equals("0")) {
+            isEnableThisAccount = false;
+        }
+
+        for (AccountDetail accountDetail : accountDetails) {
+            if (accountDetail.getRole().equals(ConstantVars.LOGIN_AS_CUSTOMER)) {
+                Customer customer = (Customer) accountDetail;
+                if (customer.getAccountId().equals(updateAccountID)) {
+                    customer.setIsAccountEnabled(isEnableThisAccount);
+                }
+            }
+        }
+
+        System.out.println("Cap nhat trang thai account thanh cong!");
+    }
+
 
     public static void adminChangeAccountInfor() {
         System.out.println("[1] Cap nhat Password");
@@ -236,31 +433,31 @@ public class Main{
 
             switch (menu1) {
                 case 1:{
-                    
+                    adminUpdatePassword();
                     break;
                 }
                 case 2: {
-                    // ();
+                    adminUpdateName();
                     break;
                 }
                 case 3: {
-                    // ();
+                    adminUpdateBirthday();
                     break;
                 }
                 case 4: {
-                    //a
+                    adminUpdatePhonNum();
                     break;
                 }
                 case 5:{
-                    //
+                    adminUpdateEmail();
                     break;
                 }
                 case 6: {
-                    
+                    adminUpdateAdress();
                     break;
                 }
                 case 7: {
-                    
+                    adminUpdateGender();
                     break;
                 }
                 case 8: {//trustlevel
@@ -268,7 +465,7 @@ public class Main{
                     break;
                 }
                 case 9: {
-                    
+                    adminUpdateAccountEnableDisable();
                     break;
                 }
                 case 10: {
@@ -553,6 +750,20 @@ public class Main{
 
         } while(kiemTraGiaTriAccountId == false);
 
+
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+
+                if (cus.getAccountId().equals(accountIDLogin)) {
+                    if (cus.getEnabled()==false) {
+                        System.out.println("Xin loi tai khoan nay chua duoc kich hoat, vui long kiem tra lai!");
+                        mainLoop();
+                    }
+                }
+            }
+        }
+
         boolean kiemTraGiatriPassword = false;
 
         do {
@@ -707,7 +918,7 @@ public class Main{
             phoneNum = scanner.nextLine();
             if (checkPhone(phoneNum) == false) {
                 System.out.println("This phone number is not valid");
-            } else if (hasEmail(phoneNum, accountDetails)){
+            } else if (hasPhone(phoneNum, accountDetails)){
                 System.out.println("This phone number is already used");
             } else {
                 break;

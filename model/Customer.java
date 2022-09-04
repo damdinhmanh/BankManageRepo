@@ -216,6 +216,31 @@ public class Customer extends AccountDetail {
         return isAccountEnabled;
     }
 
+    public void setDepositList(List<DepositDetail> depositList) {
+        this.depositList = depositList;
+    }
+
+    public void addDepositDetailHist(DepositDetail depositHist) {
+        this.depositList.add(depositHist);
+    }
+
+
+    public void setTransactionList(List<TransactionHistory> transactionList) {
+        this.transactionList = transactionList;
+    }
+
+    public void addTransactionHist(TransactionHistory tranHist) {
+        this.transactionList.add(tranHist);
+    }
+
+    public void showTransactionHistList() {
+        System.out.println(transactionList.toString());
+    }
+
+    public void showDepositHistList() {
+        System.out.println(depositList.toString());
+    }
+
     @Override
     public String toString() {
         return "\nCustomer [" + super.toString() + " || address=" + address + ", balance=" + balance + ", birthday=" + birthday

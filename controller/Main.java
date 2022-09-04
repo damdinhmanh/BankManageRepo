@@ -26,8 +26,6 @@ import utils.*;
 public class Main{
     public static Scanner scanner;
     static List<AccountDetail> accountDetails = new ArrayList<AccountDetail>();
-    private static List<DepositDetail> depositList;
-    private static List<TransactionHistory> transactionList;
     private static AdminService adminSeviceManager;
 
     static String ACCOUNTID_PATTERN = "{10,15}$";
@@ -172,7 +170,7 @@ public class Main{
                     String accountId = Integer.toString(newid);
                     AccountDetail customerAcc = new Customer(accountId, password, "customer", 2000000, name, birthday, 
                                                phoneNum, email, nationalId, address, gender,
-                                               50, true, 0, depositList, transactionList);
+                                               50, true, 0, null, null);
                          
                     accountDetails.add(customerAcc);
                     System.out.println(customerAcc.toString());
@@ -343,6 +341,121 @@ public class Main{
             }
         } while (menu1 != 6);
     }
+
+    public static void customerTransferMondey() {
+        System.out.printf("Nhap so tai khoan chuyen den: ");
+        String toAccID = scanner.nextLine();
+
+        Customer customerTran = null;
+
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+
+                if (cus.getAccountId().equals(accountIDLogin)) {
+                    customerTran = cus;
+                }
+            }
+        }
+
+        boolean tranValid = false;
+        int tranMonAmount = 0;
+
+        do {
+            System.out.printf("Nhap so tien can chuyen: ");
+            tranMonAmount = Integer.parseInt(scanner.nextLine());
+            tranValid = true;
+
+            if (tranMonAmount > customerTran.getBalance()) {
+                System.out.println("So du kha dung khong du. Xin nhap lai!");
+                tranValid = false;
+            }
+
+        } while (tranValid == false);
+
+        cusService.transferMoney(accountIDLogin, toAccID, accountDetails, tranMonAmount);
+
+    }
+
+    public static void customerShowTransactionHistory() {
+        cusService.showCustomerTransHist(accountIDLogin, accountDetails);
+    }
+
+    public static void customerSaveMoney() {
+        boolean tranValid = false;
+        int tranMonAmount = 0;
+        Customer customerTran = null;
+
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+
+                if (cus.getAccountId().equals(accountIDLogin)) {
+                    customerTran = cus;
+                }
+            }
+        }
+
+        do {
+            System.out.printf("Nhap so tien gui tiet kiem: ");
+            tranMonAmount = Integer.parseInt(scanner.nextLine());
+            tranValid = true;
+
+            if (tranMonAmount > customerTran.getBalance()) {
+                System.out.println("So du kha dung khong du. Xin nhap lai!");
+                tranValid = false;
+            }
+
+        } while (tranValid == false);
+
+        System.out.printf("Nhap ky han (so nam): ");
+        int depTermVal = Integer.parseInt(scanner.nextLine());
+
+        cusService.savingDepositTerm(accountIDLogin, tranMonAmount, depTermVal, accountDetails, adminSeviceManager.getInterestRate());
+    }
+
+    public static void showDepositListInfor() {
+        System.out.println("Tong so tien tiet kiem: " + cusService.getDepositTotalAmountFromService(accountIDLogin, accountDetails) + "VND");
+
+        cusService.showCustomerDepositHist(accountIDLogin, accountDetails);
+    }
+
+    public static void withDrawSaveMoney() {
+        boolean tranValid = false;
+        int depID = 0;
+        Customer customerTran = null;
+
+        do {
+            System.out.printf("Nhap ID so tiet kiem: ");
+            depID = Integer.parseInt(scanner.nextLine());
+
+            for (AccountDetail acc : accountDetails) {
+                if (acc instanceof Customer) {
+                    Customer cus = (Customer) acc;
+
+                    if (cus.getAccountId().equals(accountIDLogin)) {
+                        customerTran = cus;
+                    }
+                }
+            }
+
+            List<DepositDetail> depListCus = customerTran.getDepositList();
+
+            for (DepositDetail depositDetail : depListCus) {
+                if (depositDetail.getDepositID()==depID) {
+                    tranValid = true;
+                }
+            }
+
+            if (tranValid==false) {
+                System.out.println("So ID so tiet kiem khong dung, Xin nhap lai!");
+            }
+        } while (tranValid == false);
+
+        //rut so
+        cusService.withDrawSaving(accountIDLogin, depID, accountDetails);
+
+    }
     
     public static void showCustomerMenu() {    // ----Hoang da sua----------------------
        
@@ -366,27 +479,27 @@ public class Main{
 
             switch (menu2) {
                 case 1:{
-                    // chuyentien
+                    customerTransferMondey();
                     break;
                 }
                 case 2: {
-                //    gui tiet kiem
+                    customerSaveMoney();
                     break;
                 }
                 case 3: {
-                //    rut tiet kiem
+                    withDrawSaveMoney();
                     break;
                 }
                 case 4: {
-                // Kiem tra danh sach so tiet kiem
+                    showDepositListInfor();
                     break;
                 }
                 case 5:{
-                // Lich su giao dich
+                    customerShowTransactionHistory();
                     break;
                 }
                 case 6:{
-                // Kiem tra so du
+                    cusService.getCusBalance(accountIDLogin, accountDetails);
                     break;
                 }
                 case 7:{
@@ -646,9 +759,14 @@ public class Main{
                             regCus.setPassword(password);
                             regCus.setRole("customer");
                             regCus.setIsAccountEnabled(true);
-    
-                            
-        
+
+                            List<DepositDetail> depositListReg = new ArrayList<DepositDetail>();
+                            List<TransactionHistory> transactionListReg = new ArrayList<TransactionHistory>();
+
+                            regCus.setDepositList(depositListReg);
+                            regCus.setTransactionList(transactionListReg);
+
+
                             System.out.println("\nWelcome to you have successfully registered!\n");
         
                             System.out.println("MYdebug--->" + accountDetails.toString());
@@ -673,9 +791,13 @@ public class Main{
                 if (truePass(password)) {
                     int newid = getRandomNumberUsingInts(100000, 999999);
                     String accountId = Integer.toString(newid);
+
+                    List<DepositDetail> depositListReg2 = new ArrayList<DepositDetail>();
+                    List<TransactionHistory> transactionListReg2 = new ArrayList<TransactionHistory>();
+
                     AccountDetail customerAcc = new Customer(accountId, password, "customer", 2000000, name, birthday, 
                                                phoneNum, email, nationalId, address, gender,
-                                               50, true, 0, depositList, transactionList);
+                                               50, true, 0, depositListReg2, transactionListReg2);
                          
                     accountDetails.add(customerAcc);
                     System.out.println(customerAcc.toString());
@@ -766,12 +888,22 @@ public class Main{
     public static void main(String[] args) { 
         //TEST data
         accountDetails.add((AccountDetail) new Admin("100001", "Admin@123", "admin"));
+
+        //Test Acc1
+        List<DepositDetail> depositListHoang = new ArrayList<DepositDetail>();
+        List<TransactionHistory> transactionListHoang = new ArrayList<TransactionHistory>();
+
         accountDetails.add((AccountDetail) new Customer("123456", "Hoang@123", "customer", 15000000, "Hoang", "18/06/1998",
         "021932184", "Hoang@gmail.com", "123456", "address", "MALE", 10,
-        true, 200000, depositList, transactionList));
-        accountDetails.add((AccountDetail) new Customer("123457", "123", "customer", 15000000, "Hoang", "18/06/1998",
+        true, 0, depositListHoang, transactionListHoang));
+
+        //Test Acc2
+        List<DepositDetail> depositList2 = new ArrayList<DepositDetail>();
+        List<TransactionHistory> transactionList2 = new ArrayList<TransactionHistory>();
+
+        accountDetails.add((AccountDetail) new Customer("666666", "Test@123", "customer", 15000000, "Hoang", "18/06/1998",
         "021932184", "Hoang@gmail.com", "123457", "address", "MALE", 90,
-        false, 200000, depositList, transactionList));
+        true, 0, depositList2, transactionList2));
         //-----------
 
         openSession();

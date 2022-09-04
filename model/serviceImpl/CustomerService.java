@@ -1,7 +1,10 @@
 package model.serviceImpl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -78,6 +81,7 @@ public class CustomerService implements ICustomerService {
                    System.out.println("Dia chi: " +cus.getAddress());
                    System.out.println("Gioi tinh: " +cus.getGender());
                    System.out.println("Mat khau: " +cus.getPassword());  //hiện pass để check, xóa sau!!!!
+                   System.out.println("So du: " + cus.getBalance());  //hiện pass để check, xóa sau!!!!
                 }
             }
         }
@@ -205,46 +209,220 @@ public class CustomerService implements ICustomerService {
         return null;
     }
 
-    @Override
-    public int getCusBalance(String accountID) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public boolean transferMoney(String fromAccID, String toAccID, List<TransactionHistory> transHist) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public DepositDetail savingDepositTerm(int depAmount, LocalDate startDate, int depTerm) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public int withDrawSaving(String accountID, int depID, LocalDate withDrawDate) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public void getTransactionHistory(String accountID) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void getDepositDetails(String accountID) {
-        // TODO Auto-generated method stub
-        
-    }
 
     @Override
     public boolean regAccountId(String name, LocalDate birthday, String phoneNum, String email, String nationalID,
             String address, Gender gender) {
         // TODO Auto-generated method stub
         return false;
+    }
+    @Override
+    public int getCusBalance(String accountID, List<AccountDetail> accountDetails) {
+
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+            Customer cus = (Customer) acc;
+               if (cus.getAccountId().equals(accountID)) {
+                   System.out.println("\nThong tin cua ban:");
+                   System.out.println("So du: " + cus.getBalance() + "VND");  //hiện pass để check, xóa sau!!!!
+                }
+            }
+        }
+
+        return 0;
+    }
+    @Override
+    public void getDepositDetails(String accountID, List<AccountDetail> accountDetails) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void getTransactionHistory(String accountID, List<AccountDetail> accountDetails) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void savingDepositTerm(String accountID, int depAmount, int depTerm,
+            List<AccountDetail> accountDetails, double interestRate) {
+
+        Customer fromCustomer = null;
+
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+
+                if (cus.getAccountId().equals(accountID)) {
+                    fromCustomer = cus;
+                }
+            }
+        }
+
+        int fromTranID = getTransHistotryRefID();
+        LocalDateTime curDateTime = LocalDateTime.now();
+        int fromBalance = fromCustomer.getBalance();
+        fromBalance -= depAmount;
+        fromCustomer.setBalance(fromBalance);
+        String histContent = "Gui Tiet Kiem-STK: " + fromCustomer.getAccountId() + ", SD thay doi: -" + depAmount + "VND, luc " + curDateTime.toString() + ", So du: " + fromBalance + ", RefID: " + fromTranID;
+        TransactionHistory fromTranHist = new TransactionHistory(fromTranID, curDateTime, histContent);
+        fromCustomer.addTransactionHist(fromTranHist);
+
+        DepositDetail depositDetail = new DepositDetail(fromTranID, depAmount, curDateTime, depTerm, interestRate);
+        fromCustomer.addDepositDetailHist(depositDetail);
+        int cusTotalDeposit = fromCustomer.getDepositTotalAmount();
+        cusTotalDeposit += depAmount;
+        fromCustomer.setDepositTotalAmount(cusTotalDeposit);
+
+        System.out.println("Gui tiet kiem thanh cong!");
+        System.out.println(histContent);
+
+        return;
+    }
+
+    static public int getTransHistotryRefID() {
+        Random random = new Random();
+        return random.ints(100000000, 999999999)
+          .findFirst()
+          .getAsInt();
+    }
+
+    @Override
+    public boolean transferMoney(String fromAccID, String toAccID, List<AccountDetail> accountDetails, int amount) {
+
+        Customer fromCustomer = null;
+        Customer toCustomer = null;
+        
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+
+                if (cus.getAccountId().equals(fromAccID)) {
+                    fromCustomer = cus;
+                }
+
+                if (cus.getAccountId().equals(toAccID)) {
+                    toCustomer = cus;
+                }
+            }
+        }
+
+        int fromTranID = getTransHistotryRefID();
+        LocalDateTime curDateTime = LocalDateTime.now();
+        int fromBalance = fromCustomer.getBalance();
+        fromBalance -= amount;
+        fromCustomer.setBalance(fromBalance);
+        String histContent = "Chuyen Khoan-Tu STK: " + fromCustomer.getAccountId() + " sang STK:" + toCustomer.getAccountId() + ", SD thay doi: -" + amount + "VND, luc " + curDateTime.toString() + ", So du: " + fromBalance + ", RefID: " + fromTranID;
+        TransactionHistory fromTranHist = new TransactionHistory(fromTranID, curDateTime, histContent);
+        fromCustomer.addTransactionHist(fromTranHist);
+
+
+        int toTranID = getTransHistotryRefID();
+        int toBalance = toCustomer.getBalance();
+        toBalance += amount;
+        toCustomer.setBalance(toBalance);
+        String recvContent = "Nhan Chuyen Khoan- Tu STK: " + fromCustomer.getAccountId() + " sang STK:" + toCustomer.getAccountId() + ", SD thay doi: +" + amount + "VND, luc " + curDateTime.toString() + ", So du: " + toBalance + ", RefID: " + fromTranID;
+        TransactionHistory toTranHist = new TransactionHistory(fromTranID, curDateTime, recvContent);
+        toCustomer.addTransactionHist(toTranHist);
+
+
+        System.out.println("Chuyen khoan thanh cong");
+        System.out.println(histContent);
+
+        // TODO Auto-generated method stub
+        return false;
+    }
+    @Override
+    public int withDrawSaving(String accountID, int depID, List<AccountDetail> accountDetails) {
+        Customer fromCustomer = null;
+        
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+
+                if (cus.getAccountId().equals(accountID)) {
+                    fromCustomer = cus;
+                }
+
+            }
+        }
+
+        DepositDetail depCustomer= null;
+
+        List<DepositDetail> depListCus = fromCustomer.getDepositList();
+
+        for (DepositDetail depositDetail : depListCus) {
+            if (depositDetail.getDepositID()==depID) {
+                depCustomer = depositDetail;
+            }
+        }
+
+        int fromTranID = getTransHistotryRefID();
+        LocalDateTime curDateTime = LocalDateTime.now();
+        int fromBalance = fromCustomer.getBalance();
+        fromBalance += depCustomer.getDepositAmount();
+        fromCustomer.setBalance(fromBalance);
+        String histContent = "Rut Tiet Kiem-STK: " + fromCustomer.getAccountId() + ", SD thay doi: +" + depCustomer.getDepositAmount() + "VND, luc " + curDateTime.toString() + ", So du: " + fromBalance + ", RefID: " + fromTranID;
+        TransactionHistory fromTranHist = new TransactionHistory(fromTranID, curDateTime, histContent);
+        fromCustomer.addTransactionHist(fromTranHist);
+
+        int cusTotalDeposit = fromCustomer.getDepositTotalAmount();
+        cusTotalDeposit -= depCustomer.getDepositAmount();
+        fromCustomer.setDepositTotalAmount(cusTotalDeposit);
+
+        Iterator<DepositDetail> iterator = depListCus.iterator();
+
+        while(iterator.hasNext()) {
+            DepositDetail aDept = iterator.next();
+            if (aDept.getDepositID()==depID) {
+                iterator.remove();
+                break;
+            }
+        }
+
+        System.out.println("Rut so tiet kiem thanh cong");
+        System.out.println(histContent);
+        return 0;
+    }
+
+    public int getDepositTotalAmountFromService(String accountID, List<AccountDetail> accountDetails) {
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+               if (cus.getAccountId().equals(accountID)) {
+                    return cus.getDepositTotalAmount();
+                }
+            }
+        }
+        
+        return 0;
+    }
+
+    public void showCustomerDepositHist(String accountID, List<AccountDetail> accountDetails) {
+
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+               if (cus.getAccountId().equals(accountID)) {
+                    cus.showDepositHistList();
+                    return;
+                }
+            }
+        }
+
+        return;
+    }
+
+    public void showCustomerTransHist(String accountID, List<AccountDetail> accountDetails) {
+
+        for (AccountDetail acc : accountDetails) {
+            if (acc instanceof Customer) {
+                Customer cus = (Customer) acc;
+               if (cus.getAccountId().equals(accountID)) {
+                    cus.showTransactionHistList();
+                    return;
+                }
+            }
+        }
+
+        return;
     }
 }

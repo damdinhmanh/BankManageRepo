@@ -12,6 +12,7 @@ public class AdminService implements IAdminService{
 
     public void initAdminService() {
         savingInterestRate = new SavingInterestRate();
+        savingInterestRate.setInterestRate(0.05);
     }
 
     @Override

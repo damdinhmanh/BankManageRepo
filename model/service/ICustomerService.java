@@ -21,11 +21,11 @@ public interface ICustomerService {
 
     //get account infor
     public Account getCusAccountInfor(String accountID);
-    public int getCusBalance(String accountID);
-    public boolean transferMoney(String fromAccID, String toAccID, List<TransactionHistory> transHist);
-    public DepositDetail savingDepositTerm(int depAmount, LocalDate startDate, int depTerm);
-    public int withDrawSaving(String accountID, int depID, LocalDate withDrawDate);
-    public void getTransactionHistory(String accountID);
-    public void getDepositDetails(String accountID);
+    public int getCusBalance(String accountID, List<AccountDetail> accountDetails);
+    public boolean transferMoney(String fromAccID, String toAccID, List<AccountDetail> accountDetails, int transAmount);
+    public void savingDepositTerm(String accountID, int depAmount, int depTerm, List<AccountDetail> accountDetails, double interestRate);
+    public int withDrawSaving(String accountID, int depID, List<AccountDetail> accountDetails);
+    public void getTransactionHistory(String accountID, List<AccountDetail> accountDetails);
+    public void getDepositDetails(String accountID, List<AccountDetail> accountDetails);
     public boolean regAccountId(String name, LocalDate birthday, String phoneNum, String email, String nationalID, String address, Gender gender);
 }
